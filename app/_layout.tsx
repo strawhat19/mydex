@@ -1,11 +1,13 @@
 import 'react-native-reanimated';
+
 import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { useFonts } from 'expo-font';
+import { Themes } from '@/common/types';
 import * as SplashScreen from 'expo-splash-screen';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useColorScheme } from '@/components/useColorScheme';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { DarkTheme, ThemeProvider } from '@react-navigation/native';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -47,10 +49,10 @@ export default function RootLayout() {
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={colorScheme === Themes.Dark ? DarkTheme : DarkTheme}>
       <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+        <Stack.Screen name={`(tabs)`} options={{ headerShown: false }} />
+        <Stack.Screen name={`modal`} options={{ presentation: `modal` }} />
       </Stack>
     </ThemeProvider>
   );
