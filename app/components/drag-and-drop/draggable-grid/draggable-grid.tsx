@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { appleBlue } from "@/app/(tabs)/styles";
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
-import { FlatList, Image, StyleSheet, TouchableOpacity, Vibration, Button } from "react-native"; 
+import { FlatList, Image, StyleSheet, TouchableOpacity, Vibration, Button, Platform } from "react-native"; 
 import { appleGreen, applePurple, appleRed, appleYellow, Text, View } from "@/components/Themed"; 
 import { BlurView } from "expo-blur";
+import CustomImage from "@/components/custom-image/custom-image";
 
 export const initialCards = [
     {
@@ -49,64 +50,75 @@ export default function DraggableGrid() {
     let [indx, setIndx] = useState(0);
     let [items, ] = useState(initialCards);
     let [snapPoints, ] = useState([`1%`,`75%`]);
-
-    let [selected, setSelected] = useState<any>(undefined);
+    let [selected, setSelected] = useState<any>(null);
 
     const onDragEndTouch = (item: any) => {
-        Vibration.vibrate(1);
-        setSelected(item);
-        open();
-    };
+        open(item);
+    }
 
-    const open = () => {
-        setIndx(1);
-    };
+    const onSheetChange = (e?: any) => {
+        console.log(`onSheetChange`, e);
+    }
+    
+    const open = (item?: any) => {
+        if (selected == null) {
+            setIndx(1);
+            setSelected(item);
+            Vibration.vibrate(1);
+        }
+    }
 
     const close = () => {
-        setIndx(0);
-        setSelected(undefined);
-    };
+        if (selected != null) {
+            setIndx(0);
+            setSelected(null);
+        }
+    }
 
     return (
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, width: `100%` }}>
             {items && items.length > 0 ? (
                 <>
                     {/* <BlurView intensity={100}> */}
-                        <FlatList
-                            data={items}
-                            contentContainerStyle={styles.wrapper}
-                            keyExtractor={item => item.id.toString()}
-                            renderItem={({ item }) => (
-                                <TouchableOpacity onPress={() =>  onDragEndTouch(item)}>
-                                    <View style={{ ...styles.card, backgroundColor: item.backgroundColor }}>
-                                        <View style={styles.cardImageContainer}>
-                                            <Image source={{ uri: item.image }} style={styles.cardImage} />
-                                        </View>
-                                        <View style={styles.cardRight}>
-                                            <Text style={{ ...styles.cardTitle, ...item.fontColor && ({color: item.fontColor}) }}>{item.name}</Text>
-                                            <Text style={{ ...styles.cardDescription, ...item.fontColor && ({color: item.fontColor}) }}>{item.description}</Text>
-                                        </View>
+                    <FlatList
+                        data={items}
+                        style={{ flex: 1, width: `100%` }}
+                        contentContainerStyle={styles.wrapper}
+                        keyExtractor={item => item.id.toString()}
+                        renderItem={({ item }) => (
+                            <TouchableOpacity disabled={selected != null && selected == item} onPress={() =>  onDragEndTouch(item)}>
+                                {/* <BlurView intensity={100}> */}
+                                <View style={{ ...styles.card, backgroundColor: item.backgroundColor, opacity: selected != null && selected == item ? 0.5 : 1 }}>
+                                    <View style={styles.cardImageContainer}>
+                                        <CustomImage alt={item.name} source={{ uri: item.image }} style={styles.cardImage} />
                                     </View>
-                                </TouchableOpacity>
-                            )}
-                        />
+                                    <View style={styles.cardRight}>
+                                        <Text style={{ ...styles.cardTitle, ...item.fontColor && ({color: item.fontColor}) }}>{item.name}</Text>
+                                        <Text style={{ ...styles.cardDescription, ...item.fontColor && ({color: item.fontColor}) }}>{item.description}</Text>
+                                    </View>
+                                </View>
+                                {/* </BlurView> */}
+                            </TouchableOpacity>
+                        )}
+                    />
                     {/* </BlurView> */}
                     <BottomSheet
                         index={indx}
-                        onClose={close}
+                        // onClose={close}
                         snapPoints={snapPoints}
-                        enablePanDownToClose={true}
+                        onChange={onSheetChange}
+                        // enablePanDownToClose={true}
                         handleIndicatorStyle={styles.handleStyle}
                         backgroundStyle={styles.bottomSheetBackground}
                     >
                         <BottomSheetView style={styles.contentContainer}>
-                            {selected ? (
+                            {selected != null ? (
                                 <>
                                    <View style={{ ...styles.card, height: 280, backgroundColor: selected.backgroundColor }}>
-                                        <View style={{ ...styles.cardImageContainer, width: `25%` }}>
-                                            <Image source={{ uri: selected.image }} style={styles.cardImage} />
+                                        <View style={{ ...styles.cardImageContainer, width: `45%` }}>
+                                            <CustomImage alt={selected.name} source={{ uri: selected.image }} style={styles.cardImage} />
                                         </View>
-                                        <View style={styles.cardRight}>
+                                        <View style={{ ...styles.cardRight, maxWidth: 155 }}>
                                             <Text style={{ ...styles.cardTitle, ...selected.fontColor && ({color: selected.fontColor}) }}>
                                                 {selected.name}
                                             </Text>
@@ -154,6 +166,8 @@ const styles = StyleSheet.create({
     contentContainer: {
         flex: 1,
         paddingTop: 15,
+        paddingLeft: 15,
+        paddingRight: 15,
         alignItems: 'center',
     },
     cardImageContainer: {
@@ -205,8 +219,13 @@ const styles = StyleSheet.create({
         margin: 0,
         borderTopLeftRadius: 10,
         borderBottomLeftRadius: 10,
+        ...(Platform.OS == `web` && {
+            maxHeight: 500,
+            maxWidth: `auto`,
+        })
     },
     bottomSheetBackground: {
-        backgroundColor: 'transparent', // Custom navy blue color for the BottomSheet background
+        backgroundColor: 'black',
+        // backgroundColor: 'transparent',
     },
 });
