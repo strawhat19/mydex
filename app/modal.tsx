@@ -1,8 +1,17 @@
+import { state } from '@/shared/state';
 import { StatusBar } from 'expo-status-bar';
+import { useContext, useEffect } from 'react';
 import { Text, View } from '@/components/Themed';
 import { Platform, StyleSheet } from 'react-native';
 
-export default function ModalScreen() {
+export default function ModalScreen({ children }: { children: React.ReactNode; }) {
+  let { setModalOpen } = useContext<any>(state);
+
+  useEffect(() => {
+    setModalOpen(true);
+    return () => setModalOpen(false);
+  }, [])
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Modal</Text>

@@ -1,20 +1,29 @@
-import React from 'react';
-import Colors from '@/constants/Colors';
+import { appleBlue } from './styles';
+import { state } from '@/shared/state';
 import { Pressable } from 'react-native';
 import { Link, Tabs } from 'expo-router';
+import React, { useContext } from 'react';
+import { Colors } from '@/components/Themed';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useColorScheme } from '@/components/useColorScheme';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  let { modalOpen } = useContext<any>(state);
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? `dark`].tint,
+        tabBarInactiveTintColor: `white`,
+        tabBarActiveTintColor: appleBlue,
         // Disable the static render of the header on web
         // to prevent a hydration error in React Navigation v6.
         headerShown: useClientOnlyValue(false, true),
+        tabBarStyle: {
+          paddingTop: 5,
+          minHeight: 60,
+          paddingBottom: 10,
+        },
       }}>
       <Tabs.Screen
         name={`index`}
@@ -26,8 +35,8 @@ export default function TabLayout() {
               <Pressable>
                 {({ pressed }) => (
                   <FontAwesome
-                    size={25}
-                    name={`sliders`}
+                    size={18}
+                    name={modalOpen ? `times` : `bars`}
                     color={Colors[colorScheme ?? `light`].text}
                     style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
                   />

@@ -1,11 +1,33 @@
 /**
  * Learn more about Light and Dark modes:
  * https://docs.expo.io/guides/color-schemes/
- */
+*/
+
+export const images = {
+  nature: `../assets/images/hq/nature.jpg`,
+}
+
+const tintColorDark = '#fff';
+const tintColorLight = '#2f95dc';
+
+export const Colors = {
+  light: {
+    text: '#000',
+    background: '#fff',
+    tint: tintColorLight,
+    tabIconDefault: '#ccc',
+    tabIconSelected: tintColorLight,
+  },
+  dark: {
+    text: '#fff',
+    background: '#000',
+    tint: tintColorDark,
+    tabIconDefault: '#ccc',
+    tabIconSelected: tintColorDark,
+  },
+}
 
 import { Text as DefaultText, View as DefaultView } from 'react-native';
-
-import Colors from '@/constants/Colors';
 import { useColorScheme } from './useColorScheme';
 
 type ThemeProps = {

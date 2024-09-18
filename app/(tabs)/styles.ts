@@ -1,3 +1,4 @@
+export const appleBlue = `#007AFF`;
 export const defaultNavyBlue = `#04397b`;
 export const defaultDarkColor = `rgba(255,255,255,0.1)`;
 

@@ -6,9 +6,9 @@ import DragAndDropDemo from '../components/drag-and-drop/drag-and-drop-demo/drag
 export default function TabOneScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>MyDex | Pokedex Clone</Text>
+      {/* <Text style={styles.title}>MyDex | Pokedex Clone</Text>
       <View style={styles.separator} lightColor={`#eee`} darkColor={`rgba(255,255,255,0.1)`} />
-      <Text>Hello</Text>
+      <Text>Hello</Text> */}
       <DragAndDropDemo />
     </View>
   );
