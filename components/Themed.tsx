@@ -3,12 +3,12 @@
  * https://docs.expo.io/guides/color-schemes/
 */
 
-export const images = {
-  nature: `../assets/images/hq/nature.jpg`,
-}
-
 const tintColorDark = '#fff';
 const tintColorLight = '#2f95dc';
+export const appleRed = `#FF3B30`;
+export const appleGreen = `#34C759`;
+export const applePurple = `#5856D6`;
+export const appleYellow = `#FFCC00`;
 
 export const Colors = {
   light: {

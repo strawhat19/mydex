@@ -1,4 +1,5 @@
 import { createContext, useState } from 'react';
+import { GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-handler';
 
 export const state = createContext({});
 
@@ -10,13 +11,17 @@ export default function State({ children }: { children: React.ReactNode; }) {
 
   return (
     <state.Provider 
-        value={{ // Globally Shared State Data
-            user, setUser, 
-            beta, setBeta, 
-            modalOpen, setModalOpen,
-        }}
+      value={{ // Globally Shared State Data
+        user, setUser, 
+        beta, setBeta, 
+        modalOpen, setModalOpen,
+      }}
     >
-      {children}
+      <GestureHandlerRootView>
+        <PanGestureHandler>
+          {children}
+        </PanGestureHandler>
+      </GestureHandlerRootView>
     </state.Provider>
   )
 }
