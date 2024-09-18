@@ -1,8 +1,9 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { appleBlue } from "@/app/(tabs)/styles";
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import { FlatList, Image, StyleSheet, TouchableOpacity, Vibration, Button } from "react-native"; 
 import { appleGreen, applePurple, appleRed, appleYellow, Text, View } from "@/components/Themed"; 
+import { BlurView } from "expo-blur";
 
 export const initialCards = [
     {
@@ -45,66 +46,79 @@ export const initialCards = [
 ];
 
 export default function DraggableGrid() {
-    const bottomSheetRef = useRef<BottomSheet>(null);
+    let [indx, setIndx] = useState(0);
     let [items, ] = useState(initialCards);
     let [snapPoints, ] = useState([`1%`,`75%`]);
 
-    const onDragEndTouch = () => {
+    let [selected, setSelected] = useState<any>(undefined);
+
+    const onDragEndTouch = (item: any) => {
         Vibration.vibrate(1);
+        setSelected(item);
         open();
     };
 
     const open = () => {
-        if (bottomSheetRef.current) {
-        //   const currentIndex: any = (bottomSheetRef.current as any)?.index;
-        //   const nextIndex = (currentIndex + 1) % snapPoints.length; // Loop through snap points
-          bottomSheetRef.current.snapToIndex(1);
-        }
-      };
-    
-      // Function to snap to the previous index
-      const close = () => {
-        if (bottomSheetRef.current) {
-        //   const currentIndex: any = (bottomSheetRef.current as any)?.index;
-        //   const prevIndex = (currentIndex - 1 + snapPoints.length) % snapPoints.length; // Loop backward through snap points
-          bottomSheetRef.current.snapToIndex(0);
-        }
-      };
+        setIndx(1);
+    };
+
+    const close = () => {
+        setIndx(0);
+        setSelected(undefined);
+    };
 
     return (
         <View style={{ flex: 1 }}>
             {items && items.length > 0 ? (
                 <>
-                    <FlatList
-                        data={items}
-                        contentContainerStyle={styles.wrapper}
-                        keyExtractor={item => item.id.toString()}
-                        renderItem={({ item }) => (
-                            <TouchableOpacity onPress={() =>  onDragEndTouch()}>
-                                <View style={{ ...styles.card, backgroundColor: item.backgroundColor }}>
-                                    <View style={styles.cardImageContainer}>
-                                        <Image source={{ uri: item.image }} style={styles.cardImage} />
+                    {/* <BlurView intensity={100}> */}
+                        <FlatList
+                            data={items}
+                            contentContainerStyle={styles.wrapper}
+                            keyExtractor={item => item.id.toString()}
+                            renderItem={({ item }) => (
+                                <TouchableOpacity onPress={() =>  onDragEndTouch(item)}>
+                                    <View style={{ ...styles.card, backgroundColor: item.backgroundColor }}>
+                                        <View style={styles.cardImageContainer}>
+                                            <Image source={{ uri: item.image }} style={styles.cardImage} />
+                                        </View>
+                                        <View style={styles.cardRight}>
+                                            <Text style={{ ...styles.cardTitle, ...item.fontColor && ({color: item.fontColor}) }}>{item.name}</Text>
+                                            <Text style={{ ...styles.cardDescription, ...item.fontColor && ({color: item.fontColor}) }}>{item.description}</Text>
+                                        </View>
                                     </View>
-                                    <View style={styles.cardRight}>
-                                        <Text style={{ ...styles.cardTitle, ...item.fontColor && ({color: item.fontColor}) }}>{item.name}</Text>
-                                        <Text style={{ ...styles.cardDescription, ...item.fontColor && ({color: item.fontColor}) }}>{item.description}</Text>
-                                    </View>
-                                </View>
-                            </TouchableOpacity>
-                        )}
-                    />
+                                </TouchableOpacity>
+                            )}
+                        />
+                    {/* </BlurView> */}
                     <BottomSheet
-                        ref={bottomSheetRef}
+                        index={indx}
+                        onClose={close}
                         snapPoints={snapPoints}
                         enablePanDownToClose={true}
                         handleIndicatorStyle={styles.handleStyle}
                         backgroundStyle={styles.bottomSheetBackground}
                     >
                         <BottomSheetView style={styles.contentContainer}>
-                            <Text style={styles.textStyle}>Awesome 🎉</Text>
+                            {selected ? (
+                                <>
+                                   <View style={{ ...styles.card, height: 280, backgroundColor: selected.backgroundColor }}>
+                                        <View style={{ ...styles.cardImageContainer, width: `25%` }}>
+                                            <Image source={{ uri: selected.image }} style={styles.cardImage} />
+                                        </View>
+                                        <View style={styles.cardRight}>
+                                            <Text style={{ ...styles.cardTitle, ...selected.fontColor && ({color: selected.fontColor}) }}>
+                                                {selected.name}
+                                            </Text>
+                                            <Text style={{ ...styles.cardDescription, ...selected.fontColor && ({color: selected.fontColor}) }}>
+                                                {selected.description}
+                                            </Text>
+                                        </View>
+                                    </View>
+                                </>
+                            ) : <></>}
                             <View style={styles.buttonContainer}>
-                                <Button title="Snap to Next" onPress={open} />
-                                <Button title="Snap to Previous" onPress={close} />
+                                <Button title={`Close`} onPress={close} />
                             </View>
                         </BottomSheetView>
                     </BottomSheet>
@@ -139,6 +153,7 @@ const styles = StyleSheet.create({
     },
     contentContainer: {
         flex: 1,
+        paddingTop: 15,
         alignItems: 'center',
     },
     cardImageContainer: {
@@ -192,6 +207,6 @@ const styles = StyleSheet.create({
         borderBottomLeftRadius: 10,
     },
     bottomSheetBackground: {
-        backgroundColor: 'black', // Custom navy blue color for the BottomSheet background
+        backgroundColor: 'transparent', // Custom navy blue color for the BottomSheet background
     },
 });
