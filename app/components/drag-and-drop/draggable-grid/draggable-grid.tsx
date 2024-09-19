@@ -1,9 +1,13 @@
-import { useRef, useState } from "react";
+import React from 'react';
+
+import './draggable-grid.scss';
+
 import { BlurView } from "expo-blur";
+import { useRef, useState } from "react";
 import CustomImage from "@/components/custom-image/custom-image";
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
-import { Animated, FlatList, StyleSheet, TouchableOpacity, Vibration, Platform } from "react-native"; 
 import { appleBlue, appleGreen, applePurple, appleRed, appleYellow, Text, View } from "@/components/Themed"; 
+import { Animated, FlatList, StyleSheet, TouchableOpacity, Vibration, Platform, TouchableWithoutFeedback } from "react-native"; 
 
 export const initialCards = [
     {
@@ -55,7 +59,7 @@ export default function DraggableGrid() {
     const handlePressIn = () => {
         // Trigger fade-out effect
         Animated.timing(fadeAnim, {
-          toValue: 0.1,
+          toValue: 0.25,
           duration: 200, // Transition duration
           useNativeDriver: true, // Optimize performance
         }).start();
@@ -80,51 +84,57 @@ export default function DraggableGrid() {
     
     const openBottomSheet = (item?: any) => {
         setIndx(1);
+        handlePressIn();
         setSelected(item);
         Vibration.vibrate(1);
     }
 
     const closeBottomSheet = () => {
         setIndx(0);
-        setSelected(null);
         handlePressOut();
+        setSelected(null);
     }
 
     return (
         <View style={{ flex: 1, width: `100%` }}>
             {items && items.length > 0 ? (
                 <>
-                    <BlurView intensity={indx === 1 ? 50 : 0} style={styles.absolute}>
-                        <FlatList
-                            data={items}
-                            style={{ flex: 1, width: `100%` }}
-                            contentContainerStyle={styles.wrapper}
-                            keyExtractor={item => item.id.toString()}
-                            renderItem={({ item }) => (
-                                <Animated.View style={{ backgroundColor: appleBlue, borderRadius: 12, opacity: fadeAnim }}>
-                                    <TouchableOpacity 
-                                        activeOpacity={0.8}
-                                        onPressIn={handlePressIn}
-                                        // onPressOut={handlePressOut}
-                                        onPress={() =>  onDragEndTouch(item)}
-                                        disabled={selected != null && selected == item} 
+                    <TouchableWithoutFeedback style={{ flex: 1, width: `100%` }} onPress={closeBottomSheet}>
+                        <BlurView intensity={indx != 1 ? 0 : 90} tint={`dark`} style={styles.absolute}>
+                            <FlatList
+                                data={items}
+                                style={{ flex: 1, width: `100%` }}
+                                contentContainerStyle={styles.wrapper}
+                                keyExtractor={item => item.id.toString()}
+                                renderItem={({ item }) => (
+                                    <Animated.View 
+                                        id={`card`} 
+                                        style={{ backgroundColor: appleBlue, borderRadius: 12, opacity: fadeAnim }}
                                     >
-                                        {/* <BlurView intensity={100}> */}
-                                        <View style={{ ...styles.card, backgroundColor: item.backgroundColor }}>
-                                            <View style={styles.cardImageContainer}>
-                                                <CustomImage alt={item.name} source={{ uri: item.image }} style={styles.cardImage} />
+                                        <TouchableOpacity 
+                                            activeOpacity={0.5}
+                                            disabled={indx != 0} 
+                                            // onPressIn={handlePressIn}
+                                            // onPressOut={handlePressOut}
+                                            onPress={() =>  onDragEndTouch(item)}
+                                        >
+                                            {/* <BlurView intensity={100}> */}
+                                            <View style={{ ...styles.card, backgroundColor: item.backgroundColor }}>
+                                                <View style={styles.cardImageContainer}>
+                                                    <CustomImage alt={item.name} source={{ uri: item.image }} style={styles.cardImage} />
+                                                </View>
+                                                <View style={styles.cardRight}>
+                                                    <Text style={{ ...styles.cardTitle, ...item.fontColor && ({color: item.fontColor}) }}>{item.name}</Text>
+                                                    <Text style={{ ...styles.cardDescription, ...item.fontColor && ({color: item.fontColor}) }}>{item.description}</Text>
+                                                </View>
                                             </View>
-                                            <View style={styles.cardRight}>
-                                                <Text style={{ ...styles.cardTitle, ...item.fontColor && ({color: item.fontColor}) }}>{item.name}</Text>
-                                                <Text style={{ ...styles.cardDescription, ...item.fontColor && ({color: item.fontColor}) }}>{item.description}</Text>
-                                            </View>
-                                        </View>
-                                        {/* </BlurView> */}
-                                    </TouchableOpacity>
-                                </Animated.View>
-                            )}
-                        />
-                    </BlurView>
+                                            {/* </BlurView> */}
+                                        </TouchableOpacity>
+                                    </Animated.View>
+                                )}
+                            />
+                        </BlurView>
+                    </TouchableWithoutFeedback>
                     <BottomSheet
                         index={indx}
                         // onClose={close}
@@ -164,6 +174,16 @@ export default function DraggableGrid() {
 }
 
 const styles = StyleSheet.create({
+    card: {
+        gap: 15,
+        padding: 0,
+        display: 'flex',
+        borderRadius: 10,
+        flexDirection: `row`,
+        alignItems: 'center',
+        backgroundColor: appleBlue,
+        justifyContent: 'flex-start',
+    },
     absolute: {
         position: 'absolute',
         width: '100%',
@@ -210,17 +230,6 @@ const styles = StyleSheet.create({
     wrapper: {
         gap: 15,
         padding: 16,
-    },
-    card: {
-        gap: 15,
-        padding: 0,
-        width: '100%',
-        display: 'flex',
-        borderRadius: 10,
-        flexDirection: `row`,
-        alignItems: 'center',
-        backgroundColor: appleBlue,
-        justifyContent: 'flex-start',
     },
     cardTitle: {
         fontSize: 20,

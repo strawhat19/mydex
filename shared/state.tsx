@@ -1,3 +1,5 @@
+import { log } from './shared';
+import { View } from '@/components/Themed';
 import { createContext, useState } from 'react';
 import { GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-handler';
 
@@ -18,9 +20,14 @@ export default function State({ children }: { children: React.ReactNode; }) {
       }}
     >
       <GestureHandlerRootView>
-        <PanGestureHandler>
-          {children}
-        </PanGestureHandler>
+        {/* <PanGestureHandler
+          onGestureEvent={(e) => log(`gestureEvent`, e)}
+          onHandlerStateChange={(e) => log(`handleGestureStateChange`, e)}
+        > */}
+          <View style={{ flex: 1, width: `100%` }}>
+            {children}
+          </View>
+        {/* </PanGestureHandler> */}
       </GestureHandlerRootView>
     </state.Provider>
   )

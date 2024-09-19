@@ -1,4 +1,7 @@
+import { Alert, Platform } from "react-native";
 import { DataNoID, Types } from "@/common/types";
+
+export const log = (string: string, data?: any) => Platform.OS == `web` ? console.log(string, data) : Alert.alert(string);
 
 export const getNumberFromString = (string: string) => parseInt((string.match(/\d+/) as any)[0]);
 export const capitalizeAllWords = (string: string) => string.replace(/(?:^|\s)\w/g, (match) => match.toUpperCase());

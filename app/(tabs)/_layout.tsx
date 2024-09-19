@@ -23,6 +23,9 @@ export default function TabLayout() {
           minHeight: 60,
           paddingBottom: 10,
         },
+        tabBarLabelStyle: {
+          fontWeight: 400
+        }
       }}>
       <Tabs.Screen
         name={`index`}
@@ -36,7 +39,7 @@ export default function TabLayout() {
                   <FontAwesome
                     size={18}
                     name={modalOpen ? `times` : `bars`}
-                    color={Colors[colorScheme ?? `light`].text}
+                    color={Colors[colorScheme ?? `dark`].text}
                     style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
                   />
                 )}
