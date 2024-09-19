@@ -20,3 +20,16 @@ export enum Themes {
     Dark = `dark`,
     Light = `light`,
 }
+
+export class VertImageCard {
+    id: any;
+    image: any;
+    name: string = ``;
+    fontColor?: string;
+    backgroundColor: any;
+    description: string = ``;
+    extendedDescription?: string;
+    constructor(data: Partial<VertImageCard>) {
+        Object.assign(this, data);
+    }
+}

@@ -1,6 +1,8 @@
 import { Alert, Platform } from "react-native";
 import { DataNoID, Types } from "@/common/types";
 
+export const web = () => Platform.OS == `web`;
+export const mobile = () => Platform.OS != `web`;
 export const log = (string: string, data?: any) => Platform.OS == `web` ? console.log(string, data) : Alert.alert(string);
 
 export const getNumberFromString = (string: string) => parseInt((string.match(/\d+/) as any)[0]);

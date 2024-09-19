@@ -1,6 +1,6 @@
 import { log } from './shared';
 import { View } from '@/components/Themed';
-import { createContext, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import { GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-handler';
 
 export const state = createContext({});
@@ -10,6 +10,11 @@ export default function State({ children }: { children: React.ReactNode; }) {
   let [user, setUser] = useState(null);
   let [beta, setBeta] = useState(false);
   let [modalOpen, setModalOpen] = useState(false);
+  let [vertImageCards, setVertImageCards] = useState([]);
+
+  useEffect(() => {
+    
+  })
 
   return (
     <state.Provider 

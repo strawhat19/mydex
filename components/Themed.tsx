@@ -3,16 +3,31 @@
  * https://docs.expo.io/guides/color-schemes/
 */
 
-const tintColorDark = '#fff';
-const tintColorLight = '#2f95dc';
+// Apple Ios Colors
 export const appleRed = `#FF3B30`;
+export const appleBlue = `#007AFF`;
 export const appleGreen = `#34C759`;
 export const applePurple = `#5856D6`;
 export const appleYellow = `#FFCC00`;
+export const appleGreenMint = `#AAF0D1`;
+export const appleGreenShade = `rgba(0, 125, 27, 1)`;
 
-export const appleBlue = `#007AFF`;
+export const tintColorDark = `#fff`;
+export const tintColorLight = `#2f95dc`;
 export const defaultNavyBlue = `#04397b`;
+export const defaultDarkTabBG = `#121212`;
+export const defaultDarkTabBorderColor = `#272729`;
 export const defaultDarkColor = `rgba(255,255,255,0.1)`;
+
+export const vertImages = {
+  hand_leaf: `https://raw.githubusercontent.com/strawhat19/mydex/main/assets/images/hq/nature.jpg`,
+  playing_keyboard: `https://raw.githubusercontent.com/strawhat19/mydex/main/assets/images/hq/music.jpg`,
+  singing_rockstar: `https://raw.githubusercontent.com/strawhat19/mydex/main/assets/images/hq/singing.jpg`,
+  wind_flag: `https://images.pexels.com/photos/933877/pexels-photo-933877.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1`,
+  wind_mills: `https://images.pexels.com/photos/414943/pexels-photo-414943.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1`,
+  jelly_fish: `https://images.pexels.com/photos/1076758/pexels-photo-1076758.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1`,
+  wind_curtains: `https://images.pexels.com/photos/2724373/pexels-photo-2724373.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1`,
+}
 
 export const defaultTabStyles = {
   container: {
