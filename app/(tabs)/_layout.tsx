@@ -1,9 +1,8 @@
-import { appleBlue } from './styles';
 import { state } from '@/shared/state';
 import { Pressable } from 'react-native';
 import { Link, Tabs } from 'expo-router';
 import React, { useContext } from 'react';
-import { Colors } from '@/components/Themed';
+import { appleBlue, Colors } from '@/components/Themed';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useColorScheme } from '@/components/useColorScheme';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';

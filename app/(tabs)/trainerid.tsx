@@ -1,6 +1,5 @@
-import { defaultTabStyles } from './styles';
-import { Text, View } from '@/components/Themed';
 import { Alert, Button, StyleSheet } from 'react-native';
+import { defaultTabStyles, Text, View } from '@/components/Themed';
 
 export default function TrainerID() {
   const onButtonPress = () => {

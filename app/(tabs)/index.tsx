@@ -1,6 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { View } from '@/components/Themed';
-import { defaultTabStyles } from './styles';
+import { defaultTabStyles, View } from '@/components/Themed';
 import DragAndDropDemo from '../components/drag-and-drop/drag-and-drop-demo/drag-and-drop-demo';
 
 export default function Home() {

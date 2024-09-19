@@ -10,6 +10,27 @@ export const appleGreen = `#34C759`;
 export const applePurple = `#5856D6`;
 export const appleYellow = `#FFCC00`;
 
+export const appleBlue = `#007AFF`;
+export const defaultNavyBlue = `#04397b`;
+export const defaultDarkColor = `rgba(255,255,255,0.1)`;
+
+export const defaultTabStyles = {
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  separator: {
+    marginVertical: 30,
+    height: 1,
+    width: '80%',
+  },
+}
+
 export const Colors = {
   light: {
     text: '#000',
