@@ -6,6 +6,7 @@ import { appleBlue, Colors } from '@/components/Themed';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useColorScheme } from '@/components/useColorScheme';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
+import { BlurView } from 'expo-blur';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -15,13 +16,17 @@ export default function TabLayout() {
       screenOptions={{
         tabBarInactiveTintColor: `white`,
         tabBarActiveTintColor: appleBlue,
-        // Disable the static render of the header on web
-        // to prevent a hydration error in React Navigation v6.
         headerShown: useClientOnlyValue(false, true),
+        headerStyle: {
+          backgroundColor: 'rgba(0, 0, 0, 0)', // Fully transparent background
+          elevation: 0, // Remove shadow on Android
+          shadowOpacity: 0, // Remove shadow on iOS
+        },
         tabBarStyle: {
           paddingTop: 5,
           minHeight: 60,
           paddingBottom: 10,
+          backgroundColor: 'rgba(0, 0, 0, 0)',
         },
         tabBarLabelStyle: {
           fontWeight: 400

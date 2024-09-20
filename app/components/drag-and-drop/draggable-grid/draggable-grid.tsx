@@ -61,7 +61,7 @@ export default function DraggableGrid() {
             {items && items.length > 0 ? (
                 <>
                     <TouchableWithoutFeedback style={{ flex: 1, width: `100%` }} onPress={closeBottomSheet}>
-                        <BlurView intensity={indx != 1 ? 0 : 90} tint={`dark`} style={styles.absolute}>
+                        <BlurView intensity={indx != 1 ? 0 : 100} tint={`dark`} style={styles.absolute}>
                             <FlatList
                                 data={items}
                                 style={{ flex: 1, width: `100%` }}
@@ -101,30 +101,32 @@ export default function DraggableGrid() {
                         handleIndicatorStyle={styles.handleStyle}
                         backgroundStyle={{ ...styles.bottomSheetBackground, ...(selected != null && {backgroundColor: selected.backgroundColor}) }}
                     >
-                        <BottomSheetView style={styles.contentContainer}>
-                            {selected != null ? (
-                                <>
-                                   <View id={`sheetCard`} style={{ ...styles.card, height: Platform.OS == `web` ? 500 : 280, width: `100%`, backgroundColor: selected.backgroundColor }}>
-                                        <View 
-                                            style={{ 
-                                                ...styles.cardImageContainer, 
-                                                ...(Platform.OS == `web` ? {width: `30%`, alignItems: `center`} : {width: `45%`}) 
-                                            }}
-                                        >
-                                            <CustomImage alt={selected.name} source={{ uri: selected.image }} style={{ ...styles.cardImage, ...(Platform.OS == `web` && {width: `fit-content`}) }} />
+                        <BlurView intensity={100} tint={`dark`} style={styles.absolute}>
+                            <BottomSheetView style={styles.contentContainer}>
+                                {selected != null ? (
+                                    <>
+                                    <View id={`sheetCard`} style={{ ...styles.card, height: Platform.OS == `web` ? 500 : 280, width: `100%`, backgroundColor: selected.backgroundColor }}>
+                                            <View 
+                                                style={{ 
+                                                    ...styles.cardImageContainer, 
+                                                    ...(Platform.OS == `web` ? {width: `30%`, alignItems: `center`} : {width: `45%`}) 
+                                                }}
+                                            >
+                                                <CustomImage alt={selected.name} source={{ uri: selected.image }} style={{ ...styles.cardImage, ...(Platform.OS == `web` && {width: `fit-content`}) }} />
+                                            </View>
+                                            <View style={{ ...styles.cardRight }}>
+                                                <Text style={{ ...styles.cardTitle, ...selected.fontColor && ({color: selected.fontColor}) }}>
+                                                    {selected.name}
+                                                </Text>
+                                                <Text style={{ ...styles.cardDescription, ...selected.fontColor && ({color: selected.fontColor}) }}>
+                                                    {selected.description}
+                                                </Text>
+                                            </View>
                                         </View>
-                                        <View style={{ ...styles.cardRight }}>
-                                            <Text style={{ ...styles.cardTitle, ...selected.fontColor && ({color: selected.fontColor}) }}>
-                                                {selected.name}
-                                            </Text>
-                                            <Text style={{ ...styles.cardDescription, ...selected.fontColor && ({color: selected.fontColor}) }}>
-                                                {selected.description}
-                                            </Text>
-                                        </View>
-                                    </View>
-                                </>
-                            ) : <></>}
-                        </BottomSheetView>
+                                    </>
+                                ) : <></>}
+                            </BottomSheetView>
+                        </BlurView>
                     </BottomSheet>
                 </>
             ) : <></>}
@@ -148,6 +150,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         width: '100%',
         height: '100%',
+        flex: 1,
     },
     textStyle: {
         color: '#ffffff',
