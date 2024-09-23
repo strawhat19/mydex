@@ -1,6 +1,7 @@
 import { Image, Platform } from "react-native";
 
 export type CustomImageProps = {
+    id?: any;
     alt: string;
     style?: any;
     source: any;
@@ -9,13 +10,14 @@ export type CustomImageProps = {
 export default function CustomImage({
     style,
     source,
+    id = `customImage`,
     alt = Platform.OS == `web` ? `Image` : `Mobile Image`,
 }: CustomImageProps) {
     return (
         Platform.OS == `web` ? (
-            <img src={source?.uri ? source.uri : source} alt={alt} style={style} />
+            <img id={id} src={source?.uri ? source.uri : source} alt={alt} style={style} />
         ) : (
-            <Image alt={alt} source={source} style={style} />
+            <Image id={id} alt={alt} source={source} style={style} />
         )
     )
 }

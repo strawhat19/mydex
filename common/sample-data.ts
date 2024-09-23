@@ -8,7 +8,7 @@ export const defaultVertImageCards: VertImageCard[] = [
         name: `Jelly Fish`,
         backgroundColor: appleGreen,
         image: vertImages.jelly_fish,
-        fontColor: defaultDarkTabBorderColor,
+        fontColor: `white`,
         description: `This is the first card in our draggable grid.`,
     }),
     new VertImageCard({
@@ -23,7 +23,6 @@ export const defaultVertImageCards: VertImageCard[] = [
         name: `Playing Music`,
         backgroundColor: appleRed,
         image: vertImages.playing_keyboard,
-        ...(web() && { fontColor: defaultDarkTabBorderColor, }),
         description: `This is the third card in our draggable grid.`,
     }),
     new VertImageCard({

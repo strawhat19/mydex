@@ -1,3 +1,4 @@
+import { VertImageCard } from '@/common/types';
 import { log } from './shared';
 import { View } from '@/components/Themed';
 import { createContext, useEffect, useState } from 'react';
@@ -10,11 +11,11 @@ export default function State({ children }: { children: React.ReactNode; }) {
   let [user, setUser] = useState(null);
   let [beta, setBeta] = useState(false);
   let [modalOpen, setModalOpen] = useState(false);
-  let [vertImageCards, setVertImageCards] = useState([]);
 
-  useEffect(() => {
-    
-  })
+  // Bottom Sheet
+  let [indx, setIndx] = useState(0);
+  let [blur, setBlur] = useState<any>(100);
+  let [selected, setSelected] = useState<VertImageCard | null>(null);
 
   return (
     <state.Provider 
@@ -22,6 +23,9 @@ export default function State({ children }: { children: React.ReactNode; }) {
         user, setUser, 
         beta, setBeta, 
         modalOpen, setModalOpen,
+        indx, setIndx,
+        blur, setBlur,
+        selected, setSelected,
       }}
     >
       <GestureHandlerRootView>

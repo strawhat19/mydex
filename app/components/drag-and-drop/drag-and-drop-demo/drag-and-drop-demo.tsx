@@ -1,6 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { appleBlue } from '@/components/Themed';
+// import DraggableGrid from '../draggable-grid/draggable-grid-2';
 import DraggableGrid from '../draggable-grid/draggable-grid';
 // import { DroppableProvided, DroppableStateSnapshot } from 'react-beautiful-dnd';
 // import { DragDropContext, Droppable, Draggable as WebDraggable } from 'react-beautiful-dnd';

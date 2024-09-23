@@ -4,13 +4,13 @@
 */
 
 // Apple Ios Colors
-export const appleRed = `#FF3B30`;
 export const appleBlue = `#007AFF`;
 export const appleGreen = `#34C759`;
 export const applePurple = `#5856D6`;
 export const appleYellow = `#FFCC00`;
 export const appleGreenMint = `#AAF0D1`;
 export const appleGreenShade = `rgba(0, 125, 27, 1)`;
+export const appleRed = web() ? `rgb(212 67 59)` : `#FF3B30`;
 
 export const tintColorDark = `#fff`;
 export const tintColorLight = `#2f95dc`;
@@ -18,6 +18,9 @@ export const defaultNavyBlue = `#04397b`;
 export const defaultDarkTabBG = `#121212`;
 export const defaultDarkTabBorderColor = `#272729`;
 export const defaultDarkColor = `rgba(255,255,255,0.1)`;
+
+// Spacing
+export const borderRadius = 10;
 
 export const vertImages = {
   hand_leaf: `https://raw.githubusercontent.com/strawhat19/mydex/main/assets/images/hq/nature.jpg`,
@@ -65,6 +68,7 @@ export const Colors = {
 
 import { Text as DefaultText, View as DefaultView } from 'react-native';
 import { useColorScheme } from './useColorScheme';
+import { web } from '@/shared/shared';
 
 type ThemeProps = {
   lightColor?: string;

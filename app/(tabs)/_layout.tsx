@@ -1,3 +1,4 @@
+import { web } from '@/shared/shared';
 import { state } from '@/shared/state';
 import { Pressable } from 'react-native';
 import { Link, Tabs } from 'expo-router';
@@ -25,10 +26,10 @@ export default function TabLayout() {
           paddingTop: 5,
           minHeight: 60,
           paddingBottom: 10,
-          backgroundColor: 'rgba(0, 0, 0, 0)',
+          backgroundColor: web() ? 'rgba(0, 0, 0, 1)' : 'rgba(0, 0, 0, 0)',
         },
         tabBarLabelStyle: {
-          fontWeight: 400
+          fontWeight: 700
         }
       }}>
       <Tabs.Screen
