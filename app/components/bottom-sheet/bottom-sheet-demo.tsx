@@ -6,6 +6,7 @@ import BottomSheet, { BottomSheetRefProps } from './bottom-sheet';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { appleBlue, appleGreen, Text, vertImages } from '@/components/Themed';
+import { web } from '@/shared/shared';
 
 export default function BottomSheetDemo() {
   const ref = useRef<BottomSheetRefProps>(null);
@@ -75,13 +76,14 @@ const styles = StyleSheet.create({
 const blurStyles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
+    width: web() ? `100%` : `100%`,
   },
   image: {
-    width: `100%`,
     height: `100%`,
     position: 'absolute',
+    width: web() ? `auto` : `100%`,
   },
   blurContainer: {
     flex: 1,

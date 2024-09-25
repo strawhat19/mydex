@@ -15,7 +15,9 @@ export default function CustomImage({
 }: CustomImageProps) {
     return (
         Platform.OS == `web` ? (
-            <img id={id} src={source?.uri ? source.uri : source} alt={alt} style={style} />
+            // <figure id={`customImageFigure`} className={`customImageFigure`}>
+                <img id={id} src={source?.uri ? source.uri : source} alt={alt} style={style} />
+            // </figure>
         ) : (
             <Image id={id} alt={alt} source={source} style={style} />
         )
