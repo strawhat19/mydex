@@ -11,13 +11,14 @@ export default function Draggable({ children, positions, id }: any) {
     const isGestureActive = useSharedValue(false);
 
     useAnimatedReaction(
-        () => positions.value[id],
-        (newOrder: any) => {
-          const newPostions = getPosition(newOrder);
-          translateX.value = withTiming(newPostions.x);
-          translateY.value = withTiming(newPostions.y);
-        },
-    );
+      () => positions.value[id],
+      (newOrder) => {
+        // console.log(`Rearranged`, newOrder);
+        const newPostions = getPosition(newOrder);
+        translateX.value = withTiming(newPostions.x);
+        translateY.value = withTiming(newPostions.y);
+      },
+    );  
 
     const panGesture = useAnimatedGestureHandler({
         onStart: (_, ctx) => {
@@ -40,7 +41,7 @@ export default function Draggable({ children, positions, id }: any) {
               newPostions[id] = newOrder;
               newPostions[idToSwap] = oldOrder;
               positions.value = newPostions;
-              Vibration.vibrate(1);
+              // Vibration.vibrate(1);
             }
           }
         },

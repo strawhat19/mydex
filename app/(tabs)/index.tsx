@@ -1,13 +1,13 @@
 import { StyleSheet } from 'react-native';
-// import DNDYT from '../components/drag-and-drop/dndyt/dndyt';
 import { defaultTabStyles, View } from '@/components/Themed';
-import DragAndDropDemo from '../components/drag-and-drop/drag-and-drop-demo/drag-and-drop-demo';
+import DraggableGrid from '../components/drag-and-drop/draggable-grid/draggable-grid';
 
 export default function Home() {
   return (
     <View style={styles.container}>
-      <DragAndDropDemo />
-      {/* <DNDYT /> */}
+      <View style={{ flex: 1, width: `100%`, justifyContent: `center`, alignItems: `center` }}>
+        <DraggableGrid />
+      </View>
     </View>
   );
 }

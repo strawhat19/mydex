@@ -61,6 +61,13 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name={`experiments`}
+        options={{
+          title: `Experiments`,
+          tabBarIcon: ({ color }) => <FontAwesome name={`flask`} color={color} size={18} />,
+        }}
+      />
+      <Tabs.Screen
         name={`settings`}
         options={{
           title: `Settings`,
