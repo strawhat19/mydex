@@ -41,10 +41,12 @@ export default function Kanban() {
                 // Create unique shared values for each task
                 const offsetX = useSharedValue(0);
                 const offsetY = useSharedValue(0);
+                const isDragging = useSharedValue(false);
 
                 // Gesture handler for dragging each task
                 const gestureHandler = useAnimatedGestureHandler({
                   onStart: (event, context) => {
+                    isDragging.value = true;
                     context.startX = offsetX.value;
                     context.startY = offsetY.value;
                   },
@@ -53,6 +55,7 @@ export default function Kanban() {
                     offsetY.value = context.startY + event.translationY;
                   },
                   onEnd: () => {
+                    isDragging.value = false;
                     offsetX.value = withSpring(0);
                     offsetY.value = withSpring(0);
                   },
@@ -65,6 +68,11 @@ export default function Kanban() {
                       { translateX: offsetX.value },
                       { translateY: offsetY.value },
                     ],
+                    zIndex: isDragging.value ? 1 : 0, // Elevate the dragged item
+                    elevation: isDragging.value ? 5 : 0, // Elevation for Android
+                    shadowOpacity: isDragging.value ? 0.3 : 0, // Shadow for iOS
+                    shadowRadius: isDragging.value ? 10 : 0,
+                    shadowOffset: isDragging.value ? { width: 0, height: 5 } : { width: 0, height: 0 },
                   };
                 });
 
@@ -91,28 +99,32 @@ export default function Kanban() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f0f0f0',
     padding: 20,
+    backgroundColor: 'black',
   },
   board: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'space-between',
   },
   column: {
     flex: 1,
     margin: 5,
-    backgroundColor: '#fff',
-    borderRadius: 5,
     padding: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
+    width: `100%`,
+    height: `100%`,
+    minHeight: 150,
+    borderRadius: 5,
     shadowRadius: 5,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    backgroundColor: 'transparent',
+    shadowOffset: { width: 0, height: 2 },
   },
   columnTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    color: `white`,
     marginBottom: 10,
+    fontWeight: 'bold',
   },
   tasksContainer: {
     minHeight: 100,
@@ -124,6 +136,7 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     justifyContent: 'center',
     alignItems: 'center',
+    zIndex: 10000,
   },
   taskText: {
     color: '#fff',

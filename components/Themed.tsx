@@ -12,6 +12,7 @@ export const appleGreenMint = `#AAF0D1`;
 export const appleGreenShade = `rgba(0, 125, 27, 1)`;
 export const appleRed = web() ? `rgb(212 67 59)` : `#FF3B30`;
 
+export const paperColor = `#f0f0f0`;
 export const tintColorDark = `#fff`;
 export const tintColorLight = `#2f95dc`;
 export const defaultNavyBlue = `#04397b`;

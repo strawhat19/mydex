@@ -3,6 +3,7 @@ import * as Location from 'expo-location';
 import * as ImagePicker from 'expo-image-picker';
 import { Text, View } from '@/components/Themed';
 import { StyleSheet, Alert, Button } from 'react-native';
+import DragNDrop from '../components/drag-and-drop/dndyt/dndyt';
 
 export default function Settings() {
   
@@ -34,14 +35,15 @@ export default function Settings() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Settings</Text>
-      <View style={styles.separator} lightColor={`#eee`} darkColor={`rgba(255,255,255,0.1)`} />
-      <View style={styles.buttonContainer}>
-        <Button title={`Open Camera`} onPress={openCamera} />
-        <Button title={`Get Location`} onPress={getLocation} />
-      </View>
-    </View>
+    <DragNDrop />
+    // <View style={styles.container}>
+    //   <Text style={styles.title}>Settings</Text>
+    //   <View style={styles.separator} lightColor={`#eee`} darkColor={`rgba(255,255,255,0.1)`} />
+    //   <View style={styles.buttonContainer}>
+    //     <Button title={`Open Camera`} onPress={openCamera} />
+    //     <Button title={`Get Location`} onPress={getLocation} />
+    //   </View>
+    // </View>
   );
 }
 
