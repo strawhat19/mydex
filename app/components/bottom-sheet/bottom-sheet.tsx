@@ -2,10 +2,11 @@ import { Dimensions, StyleSheet, View } from 'react-native';
 import { forwardRef, useCallback, useImperativeHandle } from 'react';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { Extrapolate, interpolate, runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import { appleGreen } from '@/components/Themed';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-const MAX_TRANSLATE_Y = -SCREEN_HEIGHT + 150;
+export const MAX_TRANSLATE_Y = -SCREEN_HEIGHT + 150;
 
 type BottomSheetProps = {
   item?: any;
@@ -18,6 +19,7 @@ export type BottomSheetRefProps = {
   isActive: () => boolean;
   dragPercentage?: any;
   translateY: any;
+  closeAuto?: any;
   percent?: any;
 };
 
@@ -29,10 +31,14 @@ const BottomSheet = forwardRef<BottomSheetRefProps, BottomSheetProps>(
     const translateY = useSharedValue(0);
     const dragPercentage = useSharedValue(100);
 
-    const scrollTo = useCallback((destination: number) => {
+    const scrollTo = useCallback(({destination, resetBlur}: any) => {
       'worklet';
       active.value = destination !== 0;
       translateY.value = withSpring(destination, { damping: 50 });
+      if (resetBlur && onDragPercentageChange) {
+        let dragPercentPoint = destination >= MAX_TRANSLATE_Y ? 100 : destination <= 0 ? 0 : destination;
+        runOnJS(onDragPercentageChange)(dragPercentPoint);
+      }
     }, []);
 
     const isActive = useCallback(() => {
@@ -54,8 +60,6 @@ const BottomSheet = forwardRef<BottomSheetRefProps, BottomSheetProps>(
     }).onUpdate((event) => {
       const newY = Math.max(event.translationY + context.value.y, MAX_TRANSLATE_Y);
       translateY.value = newY;
-
-      // Calculate drag percentage
       const percentage = Math.min(
         Math.max((Math.abs(newY) / Math.abs(MAX_TRANSLATE_Y)) * 100, 0), 
         100
@@ -65,13 +69,10 @@ const BottomSheet = forwardRef<BottomSheetRefProps, BottomSheetProps>(
         runOnJS(onDragPercentageChange)(percentage * 2);
       }
     }).onEnd(() => {
-      if (translateY.value > -SCREEN_HEIGHT / 3) {
-        scrollTo(0);
-        if (onDragPercentageChange) {
-          runOnJS(onDragPercentageChange)(0);
-        }
-      } else if (translateY.value < -SCREEN_HEIGHT / 1.5) {
-        scrollTo(MAX_TRANSLATE_Y);
+      if (translateY.value > -SCREEN_HEIGHT / 1.35) {
+        scrollTo({destination: 0, resetBlur: false});
+      } else if (translateY.value < -SCREEN_HEIGHT / 1.35) {
+        scrollTo({destination: MAX_TRANSLATE_Y, resetBlur: true});
       }
     });
 
@@ -113,7 +114,7 @@ const styles = StyleSheet.create({
   line: {
     width: 75,
     height: 4,
-    backgroundColor: 'black',
+    backgroundColor: appleGreen,
     alignSelf: 'center',
     marginVertical: 15,
     borderRadius: 3,

@@ -18,15 +18,15 @@ export default function TabLayout() {
         tabBarActiveTintColor: appleBlue,
         headerShown: useClientOnlyValue(false, true),
         headerStyle: {
-          backgroundColor: 'rgba(0, 0, 0, 0)', // Fully transparent background
           elevation: 0, // Remove shadow on Android
           shadowOpacity: 0, // Remove shadow on iOS
+          backgroundColor: 'rgba(0, 0, 0, 1)', // Fully transparent background
         },
         tabBarStyle: {
           paddingTop: 5,
           minHeight: 60,
           paddingBottom: 10,
-          backgroundColor: web() ? 'rgba(0, 0, 0, 1)' : 'rgba(0, 0, 0, 0)',
+          backgroundColor: web() ? 'rgba(0, 0, 0, 1)' : 'rgba(0, 0, 0, 1)',
         },
         tabBarLabelStyle: {
           fontWeight: 700

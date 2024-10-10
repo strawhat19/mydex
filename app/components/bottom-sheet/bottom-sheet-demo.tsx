@@ -1,28 +1,60 @@
 import { BlurView } from 'expo-blur';
+import { web } from '@/shared/shared';
+import * as Haptics from 'expo-haptics';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useRef, useState } from 'react';
 import CustomImage from '@/components/custom-image/custom-image';
-import BottomSheet, { BottomSheetRefProps } from './bottom-sheet';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { appleGreen, Text, vertImages } from '@/components/Themed';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { appleBlue, appleGreen, Text, vertImages } from '@/components/Themed';
-import { web } from '@/shared/shared';
+import BottomSheet, { BottomSheetRefProps, MAX_TRANSLATE_Y } from './bottom-sheet';
+
+export const animationDuration = 300;
 
 export default function BottomSheetDemo() {
   const ref = useRef<BottomSheetRefProps>(null);
-  const [blurIntensity, setBlurIntensity] = useState(0); // Default blur intensity
+  const [blurIntensity, setBlurIntensity] = useState(0);
+  // const blurBGContainerOpacity = useRef(new Animated.Value(0)).current; // Animated value for blur opacity
+
+  const programmaticDrag = (targetPosition: number) => {
+    'worklet';  // Worklet allows the function to run on the UI thread
+    ref.current?.scrollTo({destination: targetPosition, resetBlur: targetPosition != 0} as any);  // Use scrollTo from ref and pass resetBlur
+    let dragPercentPoint = targetPosition >= MAX_TRANSLATE_Y ? 100 : targetPosition <= MAX_TRANSLATE_Y ? 0 : targetPosition;
+    handleDragPercentageChange(dragPercentPoint);
+    // enterFade();
+  };
 
   const onPress = useCallback(() => {
     const isActive = ref?.current?.isActive();
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     if (isActive) {
-      ref?.current?.scrollTo(0);
+      // exitFade();
+      programmaticDrag(0);
+      handleDragPercentageChange(0);
     } else {
-      ref?.current?.scrollTo(-200);
+      // enterFade();
+      programmaticDrag(MAX_TRANSLATE_Y);
     }
   }, []);
 
+  // const enterFade = () => {    
+  //   Animated.timing(blurBGContainerOpacity, {
+  //     toValue: 1, // Show blur
+  //     duration: animationDuration,
+  //     useNativeDriver: true,
+  //   }).start();
+  // }
+
+  // const exitFade = () => {
+  //   Animated.timing(blurBGContainerOpacity, {
+  //     toValue: 0, // Hide blur
+  //     duration: animationDuration,
+  //     useNativeDriver: true,
+  //   }).start();
+  // }
+
   const handleDragPercentageChange = (percent: number) => {
-    const newIntensity = (percent / 100) * 50; // Scale intensity between 50 and 100
+    const newIntensity = (percent / 100) * 50;
     setBlurIntensity(newIntensity);
   };
 
@@ -40,10 +72,14 @@ export default function BottomSheetDemo() {
             style={blurStyles.image}
             source={{ uri: vertImages.hand_leaf }}
           />
-          <BlurView intensity={blurIntensity} style={blurStyles.blurContainer} />
+          <BlurView intensity={blurIntensity} style={[blurStyles.blurContainer, {opacity: 1}]} />
         </View>
         <BottomSheet ref={ref} onDragPercentageChange={handleDragPercentageChange}>
-          <View style={{ flex: 1, backgroundColor: appleBlue }} />
+          <View style={{ flex: 1, backgroundColor: appleGreen }}>
+            <Text>
+              Hello
+            </Text>
+          </View>
         </BottomSheet>
       </View>
     </GestureHandlerRootView>

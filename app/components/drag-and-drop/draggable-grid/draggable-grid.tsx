@@ -22,7 +22,7 @@ export default function DraggableGrid() {
     const [indx, setIndx] = useState(0);
     const [blur, setBlur] = useState<any>(100);
     const [y, setY] = useState(blur);
-    const [snapPoints] = useState([`1%`, `65%`]);
+    const [snapPoints] = useState([`1%`, `85%`]);
     const [items] = useState<VertImageCard[]>(defaultVertImageCards);
     const [selected, setSelected] = useState<VertImageCard | null>(null);
 
