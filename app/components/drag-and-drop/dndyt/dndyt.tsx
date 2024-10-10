@@ -1,38 +1,44 @@
-import Box from './box';
-import React, { useState } from 'react';
-// import { Text } from '@/components/Themed';
-import { VertImageCard } from '@/common/types';
-import { StyleSheet, View } from 'react-native';
+import React from 'react';
+import * as Haptics from 'expo-haptics';
+import { MARGIN, SIZE } from '@/common/exports';
 import { useSharedValue } from 'react-native-reanimated';
-import { defaultVertImageCards } from '@/common/sample-data';
 import Draggable from '../draggable-grid/draggable/draggable';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { appleBlue, appleGreen, appleRed } from '@/components/Themed';
+import { appleBlue, appleGreen, appleRed, Text } from '@/components/Themed';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
-const boxes = new Array(40).fill(``).map((_, i) => i);
+const colors = [appleBlue, appleRed, appleGreen];
+const items = new Array(35).fill(``).map((_, i) => i);
+const getBGPatternColor = (idx: number) => colors[idx % colors.length];
 
-export default function DNDYT() {
-    const [items] = useState<VertImageCard[]>(defaultVertImageCards);
-    const colors = [appleBlue, appleRed, appleGreen];
-    const getBGPatternColor = (idx: number) => colors[idx % colors.length];
-
+export default function DragNDrop() {
     const positions = useSharedValue(
-        Object.assign({}, ...boxes.map((item, idx) => ({[item]: item}))),
+        Object.assign({}, ...items.map((item, idx) => ({[item]: item}))),
     );
+
+    const onDragEndTouch = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    }
 
     return (
         <SafeAreaProvider style={styles.container}>
             <GestureHandlerRootView style={styles.container}>
                 <SafeAreaView style={styles.container}>
                     <View style={styles.wrapper}>
-                        {boxes.map((item, idx) => (
-                            <Draggable key={item} id={item} positions={positions}>
-                                {/* <View style={{ width: `100%`, height: `100%`, backgroundColor: getBGPatternColor(idx) }}>
-                                    <Text>Drag Me</Text>
-                                </View> */}
-                                <Box key={item} count={item} />
-                            </Draggable>
+                        {items.map((item, idx) => (
+                            <TouchableOpacity 
+                                key={item}    
+                                activeOpacity={0.5}
+                                onPress={() =>  onDragEndTouch()}
+                            >
+                                <Draggable id={item} positions={positions}>
+                                    <View style={[styles.item, { backgroundColor: getBGPatternColor(idx) }]}>
+                                        <Text style={styles.text}>{item + 1}</Text>
+                                        <Text style={styles.text}>Drag</Text>
+                                    </View>
+                                </Draggable>
+                            </TouchableOpacity>
                         ))}
                     </View>
                 </SafeAreaView>
@@ -44,11 +50,26 @@ export default function DNDYT() {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: 'black',
+      width: `100%`,
+      backgroundColor: `black`,
     },
     wrapper: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      padding: 16,
+        padding: 0,
+        width: `100%`,
+        flexWrap: `wrap`,
+        flexDirection: `row`,
+    },
+    item: {
+        width: SIZE,
+        height: SIZE,
+        margin: MARGIN,
+        borderRadius: 0,
+        alignItems: `center`,
+        justifyContent: `center`,
+    },
+    text: {
+        fontSize: 16,
+        color: `white`,
+        fontWeight: `bold`,
     },
 });

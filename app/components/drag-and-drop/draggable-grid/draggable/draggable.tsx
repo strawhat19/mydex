@@ -43,9 +43,9 @@ export default function Draggable({ children, positions, id }: any) {
           newPostions[id] = newOrder;
           newPostions[idToSwap] = oldOrder;
           positions.value = newPostions;
-          // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           // Vibration.vibrate(1);
-          // HapticFeedback.trigger(HapticFeedbackTypes.impactLight, {
+          // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+          // HapticFeedback.trigger(HapticFeedbackTypes.impactHeavy, {
           //   enableVibrateFallback: true,
           //   ignoreAndroidSystemSettings: false,
           // });
