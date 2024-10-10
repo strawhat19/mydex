@@ -12,55 +12,23 @@ const tasksData = {
 };
 
 export default function Kanban() {
-  const [tasks, setTasks] = useState(tasksData);
-  const activeTask = useSharedValue<any>(null);
-  const offsetX = useSharedValue(0);
-  const offsetY = useSharedValue(0);
-
-  // Gesture handler for dragging
-  const gestureHandler = useAnimatedGestureHandler({
-    onStart: (event, context) => {
-      context.startX = offsetX.value;
-      context.startY = offsetY.value;
-    },
-    onActive: (event, context: any) => {
-      offsetX.value = context.startX + event.translationX;
-      offsetY.value = context.startY + event.translationY;
-    },
-    onEnd: () => {
-      offsetX.value = withSpring(0);
-      offsetY.value = withSpring(0);
-    },
-  });
+  const [tasks, setTasks] = useState<any>(tasksData);
 
   const dragTask = (task: string, fromColumn: string) => {
-    activeTask.value = { task, fromColumn };
+    return { task, fromColumn };
   };
 
-  const dropTask = (toColumn: string) => {
-    if (activeTask.value) {
-      const { task, fromColumn } = activeTask.value;
-      setTasks((prevTasks) => {
-        const newTasks: any = { ...prevTasks };
-        // Remove task from the previous column
-        newTasks[fromColumn] = newTasks[fromColumn].filter((t: any) => t !== task);
-        // Add task to the new column
-        newTasks[toColumn].push(task as any);
-        return newTasks;
-      });
-      activeTask.value = null;
-    }
+  const dropTask = (toColumn: string, taskData: any) => {
+    const { task, fromColumn } = taskData;
+    setTasks((prevTasks: any) => {
+      const newTasks: any = { ...prevTasks };
+      // Remove task from the previous column
+      newTasks[fromColumn] = newTasks[fromColumn].filter((t: any) => t !== task);
+      // Add task to the new column
+      newTasks[toColumn].push(task as any);
+      return newTasks;
+    });
   };
-
-  // Animated style for draggable items
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [
-        { translateX: offsetX.value },
-        { translateY: offsetY.value },
-      ],
-    };
-  });
 
   return (
     <GestureHandlerRootView style={styles.container}>
@@ -69,19 +37,49 @@ export default function Kanban() {
           <View key={column} style={styles.column}>
             <Text style={styles.columnTitle}>{column}</Text>
             <View style={styles.tasksContainer}>
-              {((tasks as any)[column] as any).map((task: any) => (
-                <PanGestureHandler
-                  key={task}
-                  onGestureEvent={gestureHandler}
-                  onEnded={() => dropTask(column)}
-                >
-                  <Animated.View style={[styles.task, animatedStyle]}>
-                    <Text style={styles.taskText}>
-                        {task}
-                    </Text>
-                  </Animated.View>
-                </PanGestureHandler>
-              ))}
+              {tasks[column].map((task: string) => {
+                // Create unique shared values for each task
+                const offsetX = useSharedValue(0);
+                const offsetY = useSharedValue(0);
+
+                // Gesture handler for dragging each task
+                const gestureHandler = useAnimatedGestureHandler({
+                  onStart: (event, context) => {
+                    context.startX = offsetX.value;
+                    context.startY = offsetY.value;
+                  },
+                  onActive: (event, context: any) => {
+                    offsetX.value = context.startX + event.translationX;
+                    offsetY.value = context.startY + event.translationY;
+                  },
+                  onEnd: () => {
+                    offsetX.value = withSpring(0);
+                    offsetY.value = withSpring(0);
+                  },
+                });
+
+                // Animated style for draggable items
+                const animatedStyle = useAnimatedStyle(() => {
+                  return {
+                    transform: [
+                      { translateX: offsetX.value },
+                      { translateY: offsetY.value },
+                    ],
+                  };
+                });
+
+                return (
+                  <PanGestureHandler
+                    key={task}
+                    onGestureEvent={gestureHandler}
+                    onEnded={() => dropTask(column, dragTask(task, column))}
+                  >
+                    <Animated.View style={[styles.task, animatedStyle]}>
+                      <Text style={styles.taskText}>{task}</Text>
+                    </Animated.View>
+                  </PanGestureHandler>
+                );
+              })}
             </View>
           </View>
         ))}
