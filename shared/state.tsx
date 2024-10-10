@@ -1,6 +1,8 @@
-import { VertImageCard } from '@/common/types';
+import 'react-native-gesture-handler';
+
 import { log } from './shared';
 import { View } from '@/components/Themed';
+import { VertImageCard } from '@/common/types';
 import { createContext, useEffect, useState } from 'react';
 import { GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-handler';
 

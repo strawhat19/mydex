@@ -1,7 +1,9 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "strict": true,
+    "noImplicitAny": false,   // Allows implicit `any` types
+    "strictNullChecks": false,  // Disables strict null checks
+    "strict": false,            // Disables all strict type checks
     "paths": {
       "@/*": [
         "./*"

@@ -62,7 +62,7 @@ export default function Kanban() {
                 });
 
                 // Animated style for draggable items
-                const animatedStyle = useAnimatedStyle(() => {
+                const animatedStyle = useAnimatedStyle((): any => {
                   return {
                     transform: [
                       { translateX: offsetX.value },

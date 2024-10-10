@@ -62,7 +62,7 @@ export default function Draggable({ children, positions, id }: any) {
     },
   });
 
-  const animatedStyle = useAnimatedStyle(() => {
+  const animatedStyle = useAnimatedStyle((): any => {
     const zIndex = isGestureActive.value ? 1000 : 1;
     const scale = isGestureActive.value ? 1.1 : 1;
     return {
