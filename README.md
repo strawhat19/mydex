@@ -22,6 +22,9 @@ git clone git@github.com:strawhat19/mydex.git
 cd mydex/
 npm install
 npx expo
+
+TO UPDATE
+eas update
 ```
 
 ## Table of Contents  
