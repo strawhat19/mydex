@@ -2,7 +2,7 @@ import React from 'react';
 import * as Haptics from 'expo-haptics';
 import { MARGIN, SIZE } from '@/common/exports';
 import { useSharedValue } from 'react-native-reanimated';
-import { generateUniqueID, generateUniqueItems, mobile } from '@/shared/shared';
+import { generateUniqueItems, mobile } from '@/shared/shared';
 import Draggable from '../draggable-grid/draggable/draggable';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
