@@ -42,6 +42,23 @@ export const generateUniqueID = (existingIDs?: string[]) => {
   }
   return newID;
 }
+
+export const generateUniqueItems = (amount: number, data: any = null) => {
+  const ids = [];
+  const items = [];
+
+  for (let i = 0; i < amount; i++) {
+    let id = generateUniqueID(ids);
+    ids.push(id);
+    items.push({
+      id,
+      ...data,
+    })
+  }
+
+  return items;
+  // return new Array(amount).fill({ id: generateUniqueID(), ...data });
+}
   
 export const removeTrailingZeroDecimal = (number: number, decimalPlaces = 1) => {
   let num = typeof number == `string` ? parseFloat(number) : number;
