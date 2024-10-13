@@ -2,6 +2,7 @@ import './draggable-grid.scss';
 
 import { BlurView } from 'expo-blur';
 import { web } from '@/shared/shared';
+import * as Haptics from 'expo-haptics';
 import { VertImageCard } from '@/common/types';
 import React, { useRef, useState } from 'react';
 // import Draggable from './draggable/draggable';
@@ -15,6 +16,7 @@ import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import { appleBlue, Text, View, borderRadius } from '@/components/Themed';
 // import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
+import DraggableFlatList, { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
 import { Animated, FlatList, TouchableOpacity, Vibration, TouchableWithoutFeedback, StyleSheet, useWindowDimensions } from 'react-native';
 
 export const animationDuration = 300;
@@ -30,9 +32,9 @@ export default function DraggableGrid() {
     const scrollOffsetValue = useSharedValue<number>(0);
     const carouselRef = useRef<ICarouselInstance>(null);
     const fadeAnim = useRef(new Animated.Value(1)).current;
-    const [items] = useState<VertImageCard[]>(defaultVertImageCards);
     const [selected, setSelected] = useState<VertImageCard | null>(null);
     const blurBGContainerOpacity = useRef(new Animated.Value(0)).current;
+    const [items, setItems] = useState<VertImageCard[]>(defaultVertImageCards);
     const [carouselData, setCarouselData] = useState([{ id: `listColumn-1-random` }, { id: `listColumn-2-items` }]);
 
     const openItemDetail = (item: any) => {
@@ -55,6 +57,10 @@ export default function DraggableGrid() {
         exitFadeBlur();
         setSelected(null);
     }   
+
+    const handleDragEnd = ({ data }: any) => {
+        setItems(data);  // Update the state with the new order
+    };
 
     const enterFadeBlur = () => {
         Animated.timing(fadeAnim, {
@@ -84,44 +90,67 @@ export default function DraggableGrid() {
         }).start();
     }
 
-    const DraggableItems = () => {
+    const DraggableItem = ({ item, drag, isActive }: RenderItemParams<VertImageCard>) => {
         return (
-            <View id={`draggableItemsListContainer`} style={{ flex: 1, width: '100%', position: 'relative' }}>
+            <ScaleDecorator>
+                <TouchableOpacity 
+                    onLongPress={drag}
+                    disabled={isActive} 
+                    style={{ flex: 1, width: `100%`, height: 100, opacity: isActive ? 0.5 : 1 }}
+                >
+                    <View id={`card-${item.id}`} style={{ flex: 1, width: `100%`, height: 100, backgroundColor: appleBlue }}>
+                        <Text style={styles.cardTitle}>
+                            Hello
+                        </Text>
+                    </View>
+                </TouchableOpacity>
+            </ScaleDecorator>
+            // <Draggable id={item.id - 1} positions={positions}>
+                // <Animated.View 
+                //     id={`card-${item.id}`} 
+                //     style={{ backgroundColor: appleBlue, borderRadius, opacity: fadeAnim }}
+                // >
+                //     <TouchableOpacity 
+                //         onPress={drag}
+                //         activeOpacity={0.5}
+                //         disabled={indx != 0 || isActive} 
+                //         onLongPress={() => openItemDetail(item)}
+                //     >
+                //         <View style={{ ...styles.card, backgroundColor: item.backgroundColor }}>
+                //             <View style={styles.cardImageContainer}>
+                //                 <CustomImage alt={item.name} source={{ uri: item.image }} style={styles.cardImage} />
+                //             </View>
+                //             <View style={styles.cardRight}>
+                //                 <Text style={{ ...styles.cardTitle, ...item.fontColor && ({color: item.fontColor}) }}>
+                //                     {item.name}
+                //                 </Text>
+                //                 <Text style={{ ...styles.cardDescription, ...item.fontColor && ({color: item.fontColor}) }}>
+                //                     {item.description}
+                //                 </Text>
+                //             </View>
+                //         </View>
+                //     </TouchableOpacity>
+                // </Animated.View>
+        // </Draggable>
+        )
+    }
+
+    const DraggableItems = (listID) => {
+        return (
+            <>
                 {/* The FlatList content */}
-                <FlatList
+                <DraggableFlatList
                     data={items}
-                    id={`draggableItemsList`}
+                    activationDistance={1}
+                    onDragEnd={handleDragEnd}
+                    renderItem={DraggableItem}
                     style={{ flex: 1, width: `100%` }}
+                    id={`draggableItemsList-${listID}`}
                     contentContainerStyle={styles.wrapper}
+                    containerStyle={{ paddingBottom: 4, maxHeight: '80%' }}
                     keyExtractor={(item: VertImageCard) => item.id.toString()}
-                    renderItem={({ item }) => (
-                        // <Draggable id={item.id - 1} positions={positions}>
-                            <Animated.View 
-                                id={`card-${item.id}`} 
-                                style={{ backgroundColor: appleBlue, borderRadius, opacity: fadeAnim }}
-                            >
-                                <TouchableOpacity 
-                                    activeOpacity={0.5}
-                                    disabled={indx != 0} 
-                                    onLongPress={() => openItemDetail(item)}
-                                >
-                                    <View style={{ ...styles.card, backgroundColor: item.backgroundColor }}>
-                                        <View style={styles.cardImageContainer}>
-                                            <CustomImage alt={item.name} source={{ uri: item.image }} style={styles.cardImage} />
-                                        </View>
-                                        <View style={styles.cardRight}>
-                                            <Text style={{ ...styles.cardTitle, ...item.fontColor && ({color: item.fontColor}) }}>
-                                                {item.name}
-                                            </Text>
-                                            <Text style={{ ...styles.cardDescription, ...item.fontColor && ({color: item.fontColor}) }}>
-                                                {item.description}
-                                            </Text>
-                                        </View>
-                                    </View>
-                                </TouchableOpacity>
-                            </Animated.View>
-                        // </Draggable>
-                    )}
+                    onDragBegin={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
+                    onPlaceholderIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
                 />
                 {/* Animated BlurView */}
                 <Animated.View 
@@ -137,7 +166,7 @@ export default function DraggableGrid() {
                 >
                     {web() ? <></> : <BlurView id={`blurBG`} intensity={blur} tint={`dark`} style={styles.absolute} />}
                 </Animated.View>
-            </View>
+            </>
         )
     }
 
@@ -177,15 +206,15 @@ export default function DraggableGrid() {
         )
     }
 
-    const ListColumn = () => <>
+    const ListColumn = (listID) => <>
         {web() ? (
             <div style={{ flex: 1, width: `100%`, overflowY: `auto`, overflowX: `hidden` }} onClick={closeBottomSheet}>
-                {DraggableItems()}
+                {DraggableItems(listID)}
             </div>
         ) : (
-            <TouchableWithoutFeedback style={{ flex: 1, width: `100%` }} onPress={closeBottomSheet}>
-                {DraggableItems()}
-            </TouchableWithoutFeedback>
+            <>
+                {DraggableItems(listID)}
+            </>
         )}
     </>
 
@@ -197,7 +226,7 @@ export default function DraggableGrid() {
     };
 
     return (
-        <View style={{ flex: 1, width: `100%` }}>
+        <>
             {items && items.length > 0 ? (
                 <>
                     {/* <View id={`listColumn-1`} style={{ flex: 1, width: `100%` }}> */}
@@ -210,12 +239,12 @@ export default function DraggableGrid() {
                             ref={carouselRef}
                             data={carouselData}
                             pagingEnabled={true}
-                            height={height - 160}
+                            height={height - 150}
                             onProgressChange={progress}
                             defaultScrollOffsetValue={scrollOffsetValue}
                             renderItem={({ index, item }: any) => (
                                 <>
-                                  {ListColumn()}
+                                  {ListColumn(item.id)}
                                 </>
                             )}
                         />
@@ -255,7 +284,7 @@ export default function DraggableGrid() {
                     </BottomSheet>
                 </>
             ) : <></>}
-        </View>
+        </>
     )
 }
 

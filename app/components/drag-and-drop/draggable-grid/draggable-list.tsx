@@ -4,11 +4,11 @@ import { BlurView } from 'expo-blur';
 import { web } from '@/shared/shared';
 import * as Haptics from 'expo-haptics';
 import { VertImageCard } from '@/common/types';
+import React, { useRef, useState } from 'react';
 // import Draggable from './draggable/draggable';
 import { useSharedValue } from 'react-native-reanimated';
 // import { useSharedValue } from 'react-native-reanimated';
 import { defaultVertImageCards } from '@/common/sample-data';
-import React, { useCallback, useRef, useState } from 'react';
 import { Pagination } from 'react-native-reanimated-carousel';
 // import { useAnimatedStyle } from 'react-native-reanimated';
 import CustomImage from '@/components/custom-image/custom-image';
@@ -17,13 +17,12 @@ import { appleBlue, Text, View, borderRadius } from '@/components/Themed';
 // import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 import DraggableFlatList, { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
-import { BottomSheetModal, BottomSheetModalProvider, BottomSheetBackdrop, } from '@gorhom/bottom-sheet';
 import { Animated, FlatList, TouchableOpacity, Vibration, TouchableWithoutFeedback, StyleSheet, useWindowDimensions } from 'react-native';
 
 export const animationDuration = 300;
 export const cardImageWidth = web() ? `25%` : `33%`;
 
-export default function Board() {
+export default function DraggableList() {
     const progress = useSharedValue<number>(0);
     const { width, height } = useWindowDimensions();
     const bottomSheetRef = useRef<BottomSheet>(null);
@@ -35,25 +34,17 @@ export default function Board() {
     const [blur,] = useState<any>(100);
     const [indx, setIndx] = useState(0);
     const [snapPoints] = useState([`1%`, `85%`]);
-    // const [isDragging, setIsDragging] = useState(false);
     const [selected, setSelected] = useState<VertImageCard | null>(null);
     const [items, setItems] = useState<VertImageCard[]>(defaultVertImageCards);
     const [carouselData, setCarouselData] = useState([{ id: `listColumn-1-random` }, { id: `listColumn-2-items` }]);
+
+    const handleDragEnd = ({ data }: any) => {
+        setItems(data);
+    }
     
     const onSheetChange = (index?: any) => {
         if (index === 0) closeBottomSheet();
     }
-
-    const handleDragEnd = ({ data }: any) => {
-        setItems(data);
-        // setIsDragging(false);  // Reset dragging state after drag ends
-    }
-
-    const backdrop = useCallback(
-        (props: any) => (
-            <BottomSheetBackdrop {...props} opacity={0} onPress={closeBottomSheet} />
-        ), []
-    )
 
     const openBottomSheet = (item?: any) => {
         enterFadeBlur();
@@ -66,13 +57,6 @@ export default function Board() {
         setIndx(0);
         exitFadeBlur();
         setSelected(null);
-    }
-
-    const onPressPagination = (index: number) => {
-        carouselRef.current?.scrollTo({
-          count: index - progress.value,
-          animated: true,
-        });
     }
 
     const enterFadeBlur = () => {
@@ -103,7 +87,7 @@ export default function Board() {
         }).start();
     }
 
-    const DraggableItem = ({ item, drag, isActive }: RenderItemParams<VertImageCard>) => {
+    const renderItem = ({ item, drag, isActive }: RenderItemParams<VertImageCard>) => {
         return (
             <ScaleDecorator>
                 <TouchableOpacity
@@ -114,7 +98,7 @@ export default function Board() {
                 >
                     <Animated.View 
                         id={`card-${item.id}`} 
-                        style={{ flex: 1, width: `90%`, backgroundColor: appleBlue, borderRadius, opacity: fadeAnim }}
+                        style={{ flex: 1, width: `100%`, backgroundColor: appleBlue, borderRadius, opacity: fadeAnim }}
                     >
                         <View style={{ ...styles.card, backgroundColor: item.backgroundColor }}>
                             <View style={styles.cardImageContainer}>
@@ -133,55 +117,40 @@ export default function Board() {
                 </TouchableOpacity>
             </ScaleDecorator>
         );
-    }
+    };
 
     return <>
-        <Carousel
-            loop={false}
-            width={width}
-            ref={carouselRef}
-            data={carouselData}
-            pagingEnabled={true}
-            height={height - 185}
-            onProgressChange={progress}
-            defaultScrollOffsetValue={scrollOffsetValue}
-            renderItem={({ index, item }: any) => (
-                <DraggableFlatList
-                    data={items}
-                    onDragEnd={handleDragEnd}
-                    renderItem={DraggableItem}
-                    // scrollEnabled={!isDragging}
-                    keyExtractor={(item) => item.key}
-                    contentContainerStyle={{ gap: 50, paddingBottom: 40, }}
-                    onDragBegin={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
-                    onPlaceholderIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
-                />
-            )}
+        <DraggableFlatList
+            data={items}
+            renderItem={renderItem}
+            onDragEnd={handleDragEnd}
+            keyExtractor={(item) => item.key}
+            contentContainerStyle={{ gap: 50 }}
+            onDragBegin={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
+            onPlaceholderIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
         />
-
-        <View>
-            <Text>No</Text>
-        </View>
-
-        <Pagination.Basic
-            size={8}
-            data={carouselData}
-            progress={progress}
-            onPress={onPressPagination}
-            activeDotStyle={{ backgroundColor: '#fff' }}
-            containerStyle={{ gap: 10, marginTop: 25 }}
-            dotStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.5)', borderRadius: 40 }}
-        />
-
+        <Animated.View 
+            id={`blurBGContainer`} 
+            style={[
+                styles.absolute, 
+                { 
+                    pointerEvents: `none`, 
+                    opacity: blurBGContainerOpacity, 
+                    ...(web() && { backgroundColor: `rgba(0, 0, 0, 0.4)` }), 
+                },
+            ]}
+        >
+            {web() ? <></> : <BlurView id={`blurBG`} intensity={blur} tint={`dark`} style={styles.absolute} />}
+        </Animated.View>
         <BottomSheet
             index={indx}
             ref={bottomSheetRef}
             snapPoints={snapPoints}
             onChange={onSheetChange}
             onClose={closeBottomSheet}
-            backdropComponent={backdrop}
             enableHandlePanningGesture={!web()}
             enableContentPanningGesture={!web()}
+            // animatedPosition={bottomSheetPosition as any}
             handleIndicatorStyle={styles.handleStyle} // Hide handle on web
             enablePanDownToClose={true} // Only enable drag to close on mobile
             backgroundStyle={{ ...styles.bottomSheetBackground, ...(selected != null && {backgroundColor: selected.backgroundColor}) }}

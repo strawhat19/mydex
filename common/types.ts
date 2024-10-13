@@ -23,6 +23,7 @@ export enum Themes {
 
 export class VertImageCard {
     id: any;
+    key: any;
     image: any;
     name: string = ``;
     fontColor?: string;

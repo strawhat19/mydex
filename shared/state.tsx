@@ -24,10 +24,10 @@ export default function State({ children }: { children: React.ReactNode; }) {
       value={{ // Globally Shared State Data
         user, setUser, 
         beta, setBeta, 
-        modalOpen, setModalOpen,
         indx, setIndx,
         blur, setBlur,
         selected, setSelected,
+        modalOpen, setModalOpen,
       }}
     >
       <GestureHandlerRootView>
