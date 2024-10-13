@@ -35,7 +35,13 @@ export default function TabLayout() {
       <Tabs.Screen
         name={`index`}
         options={{
-          title: `MyDex`,
+          title: `Random`,
+          headerTitleStyle: {
+            fontSize: 20,
+            color: 'white',
+            fontWeight: 'bold',
+          },
+          // headerShown: false,
           tabBarIcon: ({ color }) => <FontAwesome name={`home`} color={color} size={18} />,
           headerRight: () => (
             <Link href={`/modal`} asChild>

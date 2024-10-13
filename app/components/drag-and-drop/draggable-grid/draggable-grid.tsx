@@ -1,68 +1,50 @@
 import './draggable-grid.scss';
 
-import { BlurView } from "expo-blur";
+import { BlurView } from 'expo-blur';
 import { web } from '@/shared/shared';
-import { VertImageCard } from "@/common/types";
-import React, { useRef, useState } from "react";
+import { VertImageCard } from '@/common/types';
+import React, { useRef, useState } from 'react';
 // import Draggable from './draggable/draggable';
+import { useSharedValue } from 'react-native-reanimated';
 // import { useSharedValue } from 'react-native-reanimated';
-import { defaultVertImageCards } from "@/common/sample-data";
+import { defaultVertImageCards } from '@/common/sample-data';
+import { Pagination } from 'react-native-reanimated-carousel';
 // import { useAnimatedStyle } from 'react-native-reanimated';
-import CustomImage from "@/components/custom-image/custom-image";
-import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
-import { appleBlue, Text, View, borderRadius } from "@/components/Themed";
+import CustomImage from '@/components/custom-image/custom-image';
+import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+import { appleBlue, Text, View, borderRadius } from '@/components/Themed';
 // import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-// import { interpolate, useAnimatedProps } from 'react-native-reanimated';
-import { Animated, FlatList, TouchableOpacity, Vibration, TouchableWithoutFeedback, StyleSheet } from "react-native";
+import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
+import { Animated, FlatList, TouchableOpacity, Vibration, TouchableWithoutFeedback, StyleSheet, useWindowDimensions } from 'react-native';
 
 export const animationDuration = 300;
 export const cardImageWidth = web() ? `25%` : `33%`;
 
 export default function DraggableGrid() {
+    const [blur,] = useState<any>(100);
     const [indx, setIndx] = useState(0);
-    const [blur, setBlur] = useState<any>(100);
-    const [y, setY] = useState(blur);
+    const progress = useSharedValue<number>(0);
     const [snapPoints] = useState([`1%`, `85%`]);
+    const { width, height } = useWindowDimensions();
+    const bottomSheetRef = useRef<BottomSheet>(null);
+    const scrollOffsetValue = useSharedValue<number>(0);
+    const carouselRef = useRef<ICarouselInstance>(null);
+    const fadeAnim = useRef(new Animated.Value(1)).current;
     const [items] = useState<VertImageCard[]>(defaultVertImageCards);
     const [selected, setSelected] = useState<VertImageCard | null>(null);
+    const blurBGContainerOpacity = useRef(new Animated.Value(0)).current;
+    const [carouselData, setCarouselData] = useState([{ id: `listColumn-1-random` }, { id: `listColumn-2-items` }]);
 
-    // const gesture = Gesture.Pan().onUpdate(e => {
-    //     setY(e.translationY);
-    // })
-
-    // const sheetY = useAnimatedStyle(() => ({ transform: [{ translateY: y }] }));
-
-    const fadeAnim = useRef(new Animated.Value(1)).current;
-    const blurBGContainerOpacity = useRef(new Animated.Value(0)).current; // Animated value for blur opacity
-
-    const bottomSheetRef = useRef<BottomSheet>(null);
-    // const animatedPosition = useRef(new Animated.Value(0)).current; // Initialize with starting position of the bottom sheet
-
-    // Create an interpolated value for blur intensity
-    // const blurIntensity = animatedPosition.interpolate({
-    //     inputRange: [0, 300],  // Replace 300 with the height of your bottom sheet when fully open
-    //     outputRange: [0, 100]  // Range of blur intensity
-    // });
-
-    // const bottomSheetBGBlurItensity = useAnimatedProps([
-    //     intensity: interpolate(bottomSheetRef.current.)
-    // ])
-
-    const onDragEndTouch = (item: any) => {
+    const openItemDetail = (item: any) => {
         openBottomSheet(item);
     }
 
     const onSheetChange = (index?: any) => {
-        // console.log(`change`, {
-        //     index,
-        //     sheet: bottomSheetRef.current,
-        // });
-        // animatedPosition.setValue(index === 1 ? 300 : 0);
         if (index === 0) closeBottomSheet();
     }
 
     const openBottomSheet = (item?: any) => {
-        enterFade();
+        enterFadeBlur();
         setIndx(1);
         setSelected(item);
         Vibration.vibrate(1);
@@ -70,17 +52,11 @@ export default function DraggableGrid() {
 
     const closeBottomSheet = () => {
         setIndx(0);
-        exitFade();
+        exitFadeBlur();
         setSelected(null);
-    }
+    }   
 
-    // const blurIntensity = bottomSheetPosition.interpolate({
-    //     inputRange: [0, 1],  // Assuming 0 is fully closed and 1 is fully open
-    //     outputRange: [0, 100]  // Corresponding blur intensity values
-    // });      
-
-    // Animate the opacity of the blur when opening the bottom sheet
-    const enterFade = () => {
+    const enterFadeBlur = () => {
         Animated.timing(fadeAnim, {
             toValue: 0.25,
             duration: animationDuration,
@@ -88,14 +64,13 @@ export default function DraggableGrid() {
         }).start();
         
         Animated.timing(blurBGContainerOpacity, {
-            toValue: 1, // Show blur
+            toValue: 1,
             duration: animationDuration,
             useNativeDriver: true,
         }).start();
     }
 
-    // Animate the opacity of the blur when closing the bottom sheet
-    const exitFade = () => {
+    const exitFadeBlur = () => {
         Animated.timing(fadeAnim, {
             toValue: 1,
             duration: animationDuration,
@@ -103,7 +78,7 @@ export default function DraggableGrid() {
         }).start();
 
         Animated.timing(blurBGContainerOpacity, {
-            toValue: 0, // Hide blur
+            toValue: 0,
             duration: animationDuration,
             useNativeDriver: true,
         }).start();
@@ -128,15 +103,19 @@ export default function DraggableGrid() {
                                 <TouchableOpacity 
                                     activeOpacity={0.5}
                                     disabled={indx != 0} 
-                                    onPress={() =>  onDragEndTouch(item)}
+                                    onLongPress={() => openItemDetail(item)}
                                 >
                                     <View style={{ ...styles.card, backgroundColor: item.backgroundColor }}>
                                         <View style={styles.cardImageContainer}>
                                             <CustomImage alt={item.name} source={{ uri: item.image }} style={styles.cardImage} />
                                         </View>
                                         <View style={styles.cardRight}>
-                                            <Text style={{ ...styles.cardTitle, ...item.fontColor && ({color: item.fontColor}) }}>{item.name}</Text>
-                                            <Text style={{ ...styles.cardDescription, ...item.fontColor && ({color: item.fontColor}) }}>{item.description}</Text>
+                                            <Text style={{ ...styles.cardTitle, ...item.fontColor && ({color: item.fontColor}) }}>
+                                                {item.name}
+                                            </Text>
+                                            <Text style={{ ...styles.cardDescription, ...item.fontColor && ({color: item.fontColor}) }}>
+                                                {item.description}
+                                            </Text>
                                         </View>
                                     </View>
                                 </TouchableOpacity>
@@ -145,7 +124,17 @@ export default function DraggableGrid() {
                     )}
                 />
                 {/* Animated BlurView */}
-                <Animated.View id={`blurBGContainer`} style={[styles.absolute, { opacity: blurBGContainerOpacity, pointerEvents: `none`, ...(web() && { backgroundColor: `rgba(0, 0, 0, 0.4)` }) }]}>
+                <Animated.View 
+                    id={`blurBGContainer`} 
+                    style={[
+                        styles.absolute, 
+                        { 
+                            pointerEvents: `none`, 
+                            opacity: blurBGContainerOpacity, 
+                            ...(web() && { backgroundColor: `rgba(0, 0, 0, 0.4)` }), 
+                        },
+                    ]}
+                >
                     {web() ? <></> : <BlurView id={`blurBG`} intensity={blur} tint={`dark`} style={styles.absolute} />}
                 </Animated.View>
             </View>
@@ -155,7 +144,10 @@ export default function DraggableGrid() {
     const SheetContent = () => {
         return (
             selected != null ? (
-                <Animated.View id={`sheetCard`} style={{ ...styles.card, height: web() ? 500 : 280, width: `100%`, backgroundColor: selected.backgroundColor }}>
+                <Animated.View 
+                    id={`sheetCard`} 
+                    style={{ ...styles.card, height: web() ? 500 : 280, width: `100%`, backgroundColor: selected.backgroundColor }}
+                >
                     <View 
                         style={{ 
                             ...styles.cardImageContainer, 
@@ -185,19 +177,59 @@ export default function DraggableGrid() {
         )
     }
 
+    const ListColumn = () => <>
+        {web() ? (
+            <div style={{ flex: 1, width: `100%`, overflowY: `auto`, overflowX: `hidden` }} onClick={closeBottomSheet}>
+                {DraggableItems()}
+            </div>
+        ) : (
+            <TouchableWithoutFeedback style={{ flex: 1, width: `100%` }} onPress={closeBottomSheet}>
+                {DraggableItems()}
+            </TouchableWithoutFeedback>
+        )}
+    </>
+
+    const onPressPagination = (index: number) => {
+        carouselRef.current?.scrollTo({
+          count: index - progress.value,
+          animated: true,
+        });
+    };
+
     return (
         <View style={{ flex: 1, width: `100%` }}>
             {items && items.length > 0 ? (
                 <>
-                    {web() ? (
-                        <div style={{ flex: 1, width: `100%`, overflowY: `auto`, overflowX: `hidden` }} onClick={closeBottomSheet}>
-                            {DraggableItems()}
-                        </div>
-                    ) : (
-                        <TouchableWithoutFeedback style={{ flex: 1, width: `100%` }} onPress={closeBottomSheet}>
-                            {DraggableItems()}
-                        </TouchableWithoutFeedback>
-                    )}
+                    {/* <View id={`listColumn-1`} style={{ flex: 1, width: `100%` }}> */}
+                        {/* <Text id={`listColumn-1-title`} style={{ textAlign: `center`, ...styles.cardTitle }}>
+                            Random
+                        </Text> */}
+                        <Carousel
+                            loop={false}
+                            width={width}
+                            ref={carouselRef}
+                            data={carouselData}
+                            pagingEnabled={true}
+                            height={height - 160}
+                            onProgressChange={progress}
+                            defaultScrollOffsetValue={scrollOffsetValue}
+                            renderItem={({ index, item }: any) => (
+                                <>
+                                  {ListColumn()}
+                                </>
+                            )}
+                        />
+                    {/* </View> */}
+
+                    <Pagination.Basic
+                        size={8}
+                        data={carouselData}
+                        progress={progress}
+                        onPress={onPressPagination}
+                        activeDotStyle={{ backgroundColor: '#fff' }}
+                        containerStyle={{ gap: 10, marginVertical: 10 }}
+                        dotStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.5)', borderRadius: 40 }}
+                    />
 
                     {/* Bottom Sheet */}
                     <BottomSheet
