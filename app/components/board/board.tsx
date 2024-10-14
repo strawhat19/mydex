@@ -49,11 +49,11 @@ export default function Board() {
         // setIsDragging(false);  // Reset dragging state after drag ends
     }
 
-    const backdrop = useCallback(
-        (props: any) => (
-            <BottomSheetBackdrop {...props} opacity={0} onPress={closeBottomSheet} />
-        ), []
-    )
+    // const backdrop = useCallback(
+    //     (props: any) => (
+    //         <BottomSheetBackdrop {...props} opacity={0} onPress={closeBottomSheet} />
+    //     ), []
+    // )
 
     const openBottomSheet = (item?: any) => {
         enterFadeBlur();
@@ -108,9 +108,9 @@ export default function Board() {
             <ScaleDecorator>
                 <TouchableOpacity
                     onLongPress={drag}
+                    disabled={isActive}
                     style={styles.rowItem}
-                    disabled={indx != 0 || isActive}
-                    onPress={() => openBottomSheet(item)}
+                    onPress={() => selected != null ? closeBottomSheet() : openBottomSheet(item)}
                 >
                     <Animated.View 
                         id={`card-${item.id}`} 
@@ -142,7 +142,7 @@ export default function Board() {
             ref={carouselRef}
             data={carouselData}
             pagingEnabled={true}
-            height={height - 185}
+            height={height - 180}
             onProgressChange={progress}
             defaultScrollOffsetValue={scrollOffsetValue}
             renderItem={({ index, item }: any) => (
@@ -159,9 +159,23 @@ export default function Board() {
             )}
         />
 
-        <View>
+        <Animated.View 
+            id={`blurBGContainer`} 
+            style={[
+                styles.absolute, 
+                { 
+                    pointerEvents: `none`, 
+                    opacity: blurBGContainerOpacity, 
+                    ...(web() && { backgroundColor: `rgba(0, 0, 0, 0.4)` }), 
+                },
+            ]}
+        >
+            {web() ? <></> : <BlurView id={`blurBG`} intensity={blur} tint={`dark`} style={styles.absolute} />}
+        </Animated.View>
+
+        {/* <View>
             <Text>No</Text>
-        </View>
+        </View> */}
 
         <Pagination.Basic
             size={8}
@@ -179,7 +193,7 @@ export default function Board() {
             snapPoints={snapPoints}
             onChange={onSheetChange}
             onClose={closeBottomSheet}
-            backdropComponent={backdrop}
+            // backdropComponent={backdrop}
             enableHandlePanningGesture={!web()}
             enableContentPanningGesture={!web()}
             handleIndicatorStyle={styles.handleStyle} // Hide handle on web
