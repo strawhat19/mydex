@@ -1,26 +1,20 @@
-// import './draggable-grid.scss';
-
 import { BlurView } from 'expo-blur';
 import { web } from '@/shared/shared';
 import * as Haptics from 'expo-haptics';
 import { VertImageCard } from '@/common/types';
-// import Draggable from './draggable/draggable';
+import React, { useRef, useState } from 'react';
 import { useSharedValue } from 'react-native-reanimated';
-// import { useSharedValue } from 'react-native-reanimated';
 import { defaultVertImageCards } from '@/common/sample-data';
-import React, { useCallback, useRef, useState } from 'react';
 import { Pagination } from 'react-native-reanimated-carousel';
-// import { useAnimatedStyle } from 'react-native-reanimated';
 import CustomImage from '@/components/custom-image/custom-image';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import { appleBlue, Text, View, borderRadius } from '@/components/Themed';
-// import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
+import { Animated, TouchableOpacity, Vibration, StyleSheet, useWindowDimensions } from 'react-native';
 import DraggableFlatList, { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
-import { BottomSheetModal, BottomSheetModalProvider, BottomSheetBackdrop, } from '@gorhom/bottom-sheet';
-import { Animated, FlatList, TouchableOpacity, Vibration, TouchableWithoutFeedback, StyleSheet, useWindowDimensions } from 'react-native';
 
 export const animationDuration = 300;
+export const paginationHeightMargin = 200;
 export const cardImageWidth = web() ? `25%` : `33%`;
 
 export default function Board() {
@@ -38,7 +32,18 @@ export default function Board() {
     // const [isDragging, setIsDragging] = useState(false);
     const [selected, setSelected] = useState<VertImageCard | null>(null);
     const [items, setItems] = useState<VertImageCard[]>(defaultVertImageCards);
-    const [carouselData, setCarouselData] = useState([{ id: `listColumn-1-random` }, { id: `listColumn-2-items` }]);
+    const [carouselData, setCarouselData] = useState([
+        { 
+            id: `listColumn-1-random`,
+            name: `Next`, 
+            items,
+        }, 
+        { 
+            id: `listColumn-2-items`,
+            items: items.reverse(),
+            name: `Active`, 
+        },
+    ]);
     
     const onSheetChange = (index?: any) => {
         if (index === 0) closeBottomSheet();
@@ -46,14 +51,7 @@ export default function Board() {
 
     const handleDragEnd = ({ data }: any) => {
         setItems(data);
-        // setIsDragging(false);  // Reset dragging state after drag ends
     }
-
-    // const backdrop = useCallback(
-    //     (props: any) => (
-    //         <BottomSheetBackdrop {...props} opacity={0} onPress={closeBottomSheet} />
-    //     ), []
-    // )
 
     const openBottomSheet = (item?: any) => {
         enterFadeBlur();
@@ -113,19 +111,19 @@ export default function Board() {
                     onPress={() => selected != null ? closeBottomSheet() : openBottomSheet(item)}
                 >
                     <Animated.View 
-                        id={`card-${item.id}`} 
-                        style={{ flex: 1, width: `90%`, backgroundColor: appleBlue, borderRadius, opacity: fadeAnim }}
+                        id={`card-${item?.id}`} 
+                        style={{ flex: 1, width: `100%`, backgroundColor: appleBlue, borderRadius, opacity: fadeAnim }}
                     >
-                        <View style={{ ...styles.card, backgroundColor: item.backgroundColor }}>
+                        <View style={{ ...styles.card, backgroundColor: item?.backgroundColor }}>
                             <View style={styles.cardImageContainer}>
-                                <CustomImage alt={item.name} source={{ uri: item.image }} style={styles.cardImage} />
+                                <CustomImage alt={item?.name} source={{ uri: item?.image }} style={styles.cardImage} />
                             </View>
                             <View style={styles.cardRight}>
-                                <Text style={{ ...styles.cardTitle, ...item.fontColor && ({color: item.fontColor}) }}>
-                                    {item.name}
+                                <Text style={{ ...styles.cardTitle, ...item?.fontColor && ({color: item?.fontColor}) }}>
+                                    {item?.name}
                                 </Text>
-                                <Text style={{ ...styles.cardDescription, ...item.fontColor && ({color: item.fontColor}) }}>
-                                    {item.description}
+                                <Text style={{ ...styles.cardDescription, ...item?.fontColor && ({color: item?.fontColor}) }}>
+                                    {item?.description}
                                 </Text>
                             </View>
                         </View>
@@ -137,27 +135,50 @@ export default function Board() {
 
     return <>
         <Carousel
-            loop={false}
+            loop={true}
             width={width}
+            height={height}
             ref={carouselRef}
             data={carouselData}
             pagingEnabled={true}
-            height={height - 180}
             onProgressChange={progress}
             defaultScrollOffsetValue={scrollOffsetValue}
             renderItem={({ index, item }: any) => (
-                <DraggableFlatList
-                    data={items}
-                    onDragEnd={handleDragEnd}
-                    renderItem={DraggableItem}
-                    // scrollEnabled={!isDragging}
-                    keyExtractor={(item) => item.key}
-                    contentContainerStyle={{ gap: 50, paddingBottom: 40, }}
-                    onDragBegin={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
-                    onPlaceholderIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
-                />
+                <>
+                    <DraggableFlatList
+                        data={items}
+                        key={item?.key}
+                        onDragEnd={handleDragEnd}
+                        renderItem={DraggableItem}
+                        keyExtractor={(item) => item?.key}
+                        style={{ height: height - paginationHeightMargin}}
+                        onDragBegin={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
+                        onPlaceholderIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
+                        contentContainerStyle={{ 
+                            gap: 5, 
+                            padding: 5,  
+                            width: `100%`,
+                            marginHorizontal: `auto`, 
+                        }}
+                    />
+                    <Text style={[styles.cardTitle, { textAlign: `center`, paddingTop: 12 }]}>
+                        {item?.name}
+                    </Text>
+                </>
             )}
         />
+
+        <View style={{ flex: 1, width: `100%`, marginTop: -1 * (paginationHeightMargin - 50), pointerEvents: `none` }}>
+            <Pagination.Basic
+                size={8}
+                data={carouselData}
+                progress={progress}
+                onPress={onPressPagination}
+                containerStyle={{ gap: 10, }}
+                activeDotStyle={{ backgroundColor: `#fff` }}
+                dotStyle={{ backgroundColor: `rgba(255, 255, 255, 0.5)`, borderRadius: 40 }}
+            />
+        </View>
 
         <Animated.View 
             id={`blurBGContainer`} 
@@ -172,20 +193,6 @@ export default function Board() {
         >
             {web() ? <></> : <BlurView id={`blurBG`} intensity={blur} tint={`dark`} style={styles.absolute} />}
         </Animated.View>
-
-        {/* <View>
-            <Text>No</Text>
-        </View> */}
-
-        <Pagination.Basic
-            size={8}
-            data={carouselData}
-            progress={progress}
-            onPress={onPressPagination}
-            activeDotStyle={{ backgroundColor: '#fff' }}
-            containerStyle={{ gap: 10, marginTop: 25 }}
-            dotStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.5)', borderRadius: 40 }}
-        />
 
         <BottomSheet
             index={indx}
@@ -249,7 +256,6 @@ const cardedBorderRight = {
 
 const styles = StyleSheet.create({
     rowItem: {
-        height: 100,
         width: `100%`,
         alignItems: "center",
         justifyContent: "center",
