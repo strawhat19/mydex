@@ -21,10 +21,18 @@ export enum Themes {
     Light = `light`,
 }
 
+export class ListColumn {
+    id: any;
+    name: string;
+    category: string;
+    items: VertImageCard[];
+}
+
 export class VertImageCard {
     id: any;
     key: any;
     image: any;
+    listID: any;
     name: string = ``;
     fontColor?: string;
     backgroundColor: any;

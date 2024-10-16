@@ -1,9 +1,9 @@
 import { BlurView } from 'expo-blur';
 import { web } from '@/shared/shared';
 import * as Haptics from 'expo-haptics';
-import { VertImageCard } from '@/common/types';
 import React, { useRef, useState } from 'react';
 import { useSharedValue } from 'react-native-reanimated';
+import { ListColumn, VertImageCard } from '@/common/types';
 import { defaultVertImageCards } from '@/common/sample-data';
 import { Pagination } from 'react-native-reanimated-carousel';
 import CustomImage from '@/components/custom-image/custom-image';
@@ -13,6 +13,7 @@ import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 import { Animated, TouchableOpacity, Vibration, StyleSheet, useWindowDimensions } from 'react-native';
 import DraggableFlatList, { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
 
+export const gridSpacing = 15;
 export const animationDuration = 300;
 export const paginationHeightMargin = 200;
 export const cardImageWidth = web() ? `25%` : `33%`;
@@ -31,26 +32,29 @@ export default function Board() {
     const [snapPoints] = useState([`1%`, `85%`]);
     // const [isDragging, setIsDragging] = useState(false);
     const [selected, setSelected] = useState<VertImageCard | null>(null);
-    const [items, setItems] = useState<VertImageCard[]>(defaultVertImageCards);
-    const [carouselData, setCarouselData] = useState([
+    const [carouselData, setCarouselData] = useState<ListColumn[]>([
         { 
-            id: `listColumn-1-random`,
-            name: `Next`, 
-            items,
+            name: `Items`, 
+            category: `Items`,
+            id: `1-listColumn-items`,
+            items: [defaultVertImageCards[0], defaultVertImageCards[1]],
         }, 
         { 
-            id: `listColumn-2-items`,
-            items: items.reverse(),
             name: `Active`, 
+            category: `Active`,
+            id: `2-listColumn-active`,
+            items: [defaultVertImageCards[2], defaultVertImageCards[3]],
+        },
+        { 
+            name: `Complete`, 
+            category: `Complete`,
+            id: `3-listColumn-complete`,
+            items: [defaultVertImageCards[4], defaultVertImageCards[5], defaultVertImageCards[6]],
         },
     ]);
     
     const onSheetChange = (index?: any) => {
         if (index === 0) closeBottomSheet();
-    }
-
-    const handleDragEnd = ({ data }: any) => {
-        setItems(data);
     }
 
     const openBottomSheet = (item?: any) => {
@@ -71,6 +75,19 @@ export default function Board() {
           count: index - progress.value,
           animated: true,
         });
+    }
+
+    const handleDragEnd = ({ data }: any) => {
+        setCarouselData((prevCarouselData: ListColumn[]) => {
+            return prevCarouselData.map((list: ListColumn) => {
+                if (list.id == data[0].listID) {
+                    return {
+                        ...list,
+                        items: data,
+                    };
+                } else return list;
+            })
+        })
     }
 
     const enterFadeBlur = () => {
@@ -146,8 +163,8 @@ export default function Board() {
             renderItem={({ index, item }: any) => (
                 <>
                     <DraggableFlatList
-                        data={items}
-                        key={item?.key}
+                        data={item?.items}
+                        // key={item?.key}
                         onDragEnd={handleDragEnd}
                         renderItem={DraggableItem}
                         keyExtractor={(item) => item?.key}
@@ -155,9 +172,9 @@ export default function Board() {
                         onDragBegin={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
                         onPlaceholderIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
                         contentContainerStyle={{ 
-                            gap: 5, 
-                            padding: 5,  
                             width: `100%`,
+                            gap: gridSpacing, 
+                            padding: gridSpacing,  
                             marginHorizontal: `auto`, 
                         }}
                     />
