@@ -35,7 +35,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name={`index`}
         options={{
-          title: `Random`,
+          title: `Boards`,
           headerTitleStyle: {
             fontSize: 20,
             color: 'white',

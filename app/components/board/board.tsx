@@ -152,7 +152,7 @@ export default function Board() {
 
     return <>
         <Carousel
-            loop={true}
+            loop={false}
             width={width}
             height={height}
             ref={carouselRef}
@@ -173,19 +173,26 @@ export default function Board() {
                         onPlaceholderIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
                         contentContainerStyle={{ 
                             width: `100%`,
-                            gap: gridSpacing, 
+                            gap: gridSpacing - 2, 
                             padding: gridSpacing,  
                             marginHorizontal: `auto`, 
                         }}
                     />
-                    <Text style={[styles.cardTitle, { textAlign: `center`, paddingTop: 12 }]}>
-                        {item?.name}
-                    </Text>
+                    <View id={`${item.id}-footer`} style={{ width: `100%`, alignItems: `center`, justifyContent: `space-between`, display: `flex`, gap: 5 }}>
+                        <TouchableOpacity style={{ backgroundColor: appleBlue, width: `92%`, padding: 1, borderRadius: borderRadius - 3 }}>
+                            <Text style={[styles.cardTitle, { textAlign: `center`, fontSize: 16 }]}>
+                                + Add Item
+                            </Text>
+                        </TouchableOpacity>
+                        <Text style={[styles.cardTitle, { textAlign: `center`, fontStyle: `italic`, fontSize: 16 }]}>
+                            {item?.name}    
+                        </Text>
+                    </View>
                 </>
             )}
         />
 
-        <View style={{ flex: 1, width: `100%`, marginTop: -1 * (paginationHeightMargin - 50), pointerEvents: `none` }}>
+        <View style={{ flex: 1, width: `100%`, marginTop: -1 * (paginationHeightMargin - 55), pointerEvents: `none` }}>
             <Pagination.Basic
                 size={8}
                 data={carouselData}
@@ -286,8 +293,8 @@ const styles = StyleSheet.create({
     card: {
         gap: 15,
         padding: 0,
-        display: 'flex',
         borderRadius,
+        display: 'flex',
         overflow: `hidden`,
         flexDirection: `row`,
         alignItems: 'center',
